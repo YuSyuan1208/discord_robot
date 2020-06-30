@@ -14,16 +14,6 @@ test
 test
 ```
 """
-""" try:
-            
-        except:
-            await ctx.send(" ```arm\ncommand_error\n``` ex. \*王列表 all ,\*王列表 ?王") """
-
-""" embed=discord.Embed(title="test", url="https://cdn.discordapp.com/attachments/680402200077271106/680811732612022273/8f7f718840db69b983fbbf90a7a73401.png", description="test")
-embed.set_author(name="test", icon_url="https://cdn.discordapp.com/attachments/680402200077271106/680811732612022273/8f7f718840db69b983fbbf90a7a73401.png",, icon_url="https://cdn.discordapp.com/attachments/680402200077271106/680811732612022273/8f7f718840db69b983fbbf90a7a73401.png")
-embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/680402200077271106/680811732612022273/8f7f718840db69b983fbbf90a7a73401.png")
-embed.add_field(name="test", value="u"\U0001F535"", inline=False) 
-await self.bot.say(embed=embed)"""
 
 import discord
 from discord.ext import commands
@@ -33,10 +23,17 @@ import json
 import array
 from model.func import *
 import sys
-#tea_fig_channel = 681535968251215885
-#run_out_before_look = 647421252742414338
-#backup_channel = 703285476999823511
-img_url_list = {"1王": "https://cdn.discordapp.com/attachments/680402200077271106/702486233976274954/a20f65fafc6ab134dee66e9e03b2e07e.png",
+
+
+img_url_list = team_fight_setting['img_url_list']
+unit_list = team_fight_setting['unit_list']
+embed_color_list = team_fight_setting['embed_color_list']
+number_emoji = team_fight_setting['number_emoji']
+sign_up_emoji = team_fight_setting['sign_up_emoji']
+cancel_emoji = team_fight_setting['cancel_emoji']
+overflow_emoji = team_fight_setting['overflow_emoji']
+overflow_cancel_emoji = team_fight_setting['overflow_cancel_emoji']
+""" img_url_list = {"1王": "https://cdn.discordapp.com/attachments/680402200077271106/702486233976274954/a20f65fafc6ab134dee66e9e03b2e07e.png",
                 "2王": "https://cdn.discordapp.com/attachments/680402200077271106/702486290012307517/75edbc7700db07e068ffbbe1e14fdf71.png",
                 "3王": "https://cdn.discordapp.com/attachments/680402200077271106/702486362065993728/ee8ccd72f075340d5105c38903681e7b.png",
                 "4王": "https://cdn.discordapp.com/attachments/680402200077271106/702486425844580362/gateway-3-1.png",
@@ -53,7 +50,6 @@ embed_color_list = {"可報_無補": 0xaae3aa,
                     "不可報": 0xe38fa5,
                     "補償清單": 0xffffff}
 
-meme_channel = setting_data['meme_channel']
 
 number_emoji = ['0️⃣', '1️⃣', '2️⃣', '3️⃣',
                 '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '⬅️', '▶️']
@@ -61,7 +57,7 @@ number_emoji = ['0️⃣', '1️⃣', '2️⃣', '3️⃣',
 sign_up_emoji = '📄'
 cancel_emoji = '🔄'
 overflow_emoji = '🔂'
-overflow_cancel_emoji = '🆖'
+overflow_cancel_emoji = '🆖' """
 
 limit_enable = True
 
@@ -119,7 +115,7 @@ class Team_Fight(Cog_Extension):
             delete_msg = ''
         ''' 權限 '''
         if (id_check(author_id) != True):
-            if(limit_enable):
+            if(limit_enable): 
                 if (channel_id not in [tea_fig_channel, only_meme_speak_channel]):
                     return 0
         # try:
@@ -763,10 +759,7 @@ class Team_Fight(Cog_Extension):
     """ ----------------- admin command -----------------"""
     @commands.command()
     async def now輸出(self, ctx):
-        now_save()
-        #f = open("./data/now.txt", "w")
-        #f.write(f'{now}')
-        #f.close()        
+        now_save() 
 
     @commands.command()
     async def now_print(self, ctx):
@@ -794,9 +787,6 @@ class Team_Fight(Cog_Extension):
     @commands.command()
     async def data輸出(self, ctx):
         data_save()
-        #f = open("./data/data.txt", "w")
-        #f.write(f'{All_OutKnife_Data}')
-        #f.close()
 
     ''' @commands.command()
     async def 新增(self, ctx, msg):
@@ -1151,41 +1141,9 @@ class Team_Fight(Cog_Extension):
         
         print(overflow)
         #print(msg.id)
-        ''' channel = self.bot.get_channel(only_meme_speak_channel)
-        with open('./data/list_msg_tmp.txt', 'r') as content_file:
-          list_msg_tmp_id = ast.literal_eval(content_file.read())
-        for id in list_msg_tmp_id:
-          print(id)
-          if id == 0:
-            msg_obj = list_msg_empty()
-          else:
-            msg_obj = await channel.fetch_message(id)
-          print(msg_obj.id)
-          list_msg_tmp.append([0,0,msg_obj])
-          #print(list_msg_tmp[])
-        await self.meme_edit(ctx, 'all') '''
-        ''' tmp = []
-        for id in list_msg_tmp:
-          tmp.append(id[2].id)
-        f = open("./data/list_msg_tmp.txt", "w")
-        f.write(f'{tmp}')
-        f.close() '''
         #await ss.edit("test")
         #number_insert_msg.clear()
         #list_msg_tmp.clear() 
-
-    @commands.command()
-    async def test2(self, ctx):
-        f = open("./data/now.txt", "w")
-        f.write(f'{now}')
-        f.close()
-        ''' tmp = []
-        for id in list_msg_tmp:
-          #print(id)
-          tmp.append(id[2].id)
-        f = open("./data/list_msg_tmp.txt", "w")
-        f.write(f'{tmp}')
-        f.close() '''
 
     @commands.command()
     async def 清單_print(self, ctx, *msg):
@@ -1234,8 +1192,8 @@ class Team_Fight(Cog_Extension):
         for id in list_msg_tmp:
           #print(id)
           tmp.append(id[2].id)
-        f = open("./data/list_msg_tmp.txt", "w")
-        f.write(f'{tmp}')
+        f = open("./data/list_msg_tmp.json", "w")
+        f.write(f'{json.dumps(tmp)}')
         f.close()
         """ except:
             await ctx.send("```arm\n欲查詢列表請標注特定王(ฅฅ*)\n``` ex. \*列表 all ,\*列表 ?王")
@@ -1257,19 +1215,6 @@ def tea_fig_column(matrix, author_id):
 
 def tea_fig_error_message():
     return "指令錯誤,輸入[*help 指令]了解詳情"
-
-
-def tea_fig_KingIndexToKey(King_List, msg):
-    """ TODO:轉換數字->(1~5)王, 無法轉換則回傳原值 """
-    try:
-        msg = int(msg)
-        if(len(King_List) >= int(msg)):
-            tmp = list(King_List.keys())
-            msg = tmp[msg-1]
-    except:
-        msg = msg
-    return msg
-
 
 def tea_fig_PlusAllDamage(SignUp_List, in_id=-1):
     all_dam = 0

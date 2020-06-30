@@ -1,3 +1,4 @@
+# coding=UTF-8
 """ 
 *help 
 *reload
@@ -10,14 +11,14 @@ from discord.ext import commands
 import json
 import os
 from model.func import *
-import keep_alive
+#import keep_alive
 import re
 
 team_fight_list_compare_enable = False
+all_function_enable = False
 
 bot = commands.Bot(
     command_prefix=setting_data['BOT_PREFIX'], case_insensitive=True)
-print('test')
 
 @bot.event
 async def on_ready():
@@ -25,13 +26,14 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     ''' channel object '''
-    meme_channel_obj = bot.get_channel(meme_channel)
-    only_meme_speak_channel_obj = bot.get_channel(only_meme_speak_channel)
-    run_channel = bot.get_channel(run_out_before_look)
-    backup_channel = bot.get_channel(backup_channel_id)
 
-    await backup_channel.send(content=f'系統斷線重啟')
     if team_fight_function_enable and team_fight_list_compare_enable:
+      meme_channel_obj = bot.get_channel(meme_channel)
+      only_meme_speak_channel_obj = bot.get_channel(only_meme_speak_channel)
+      run_channel = bot.get_channel(run_out_before_look)
+      backup_channel = bot.get_channel(backup_channel_id)
+
+      await backup_channel.send(content=f'系統斷線重啟')
       msg_tip = []
       change_content_list = [] # if system changed save there
       msg_tip.append(await run_channel.send(content=f'系統斷線重啟，資料核對中，請勿操作'))
@@ -179,8 +181,10 @@ async def on_ready():
       for i in msg_tip:
           await i.delete(delay=5)
 
+      await backup_channel.send(content=f'系統重啟完成!')
+      
     print('------')
-    await backup_channel.send(content=f'系統重啟完成!')
+    
    
 
 @bot.command()
@@ -209,7 +213,6 @@ async def reload(ctx, extension):
 # help ending note
 """ bot.help_command.get_ending_note """
 
-print('import module')
 for filename in os.listdir('./cmds'):
     if filename.endswith('.py'):
         if not team_fight_function_enable:
@@ -218,5 +221,5 @@ for filename in os.listdir('./cmds'):
         bot.load_extension(f'cmds.{filename[:-3]}')
 
 if __name__ == "__main__":
-    keep_alive.keep_alive()
+    #keep_alive.keep_alive()
     bot.run(setting_data['TOKEN'])

@@ -5,13 +5,8 @@ from core.classes import Cog_Extension
 from model.func import *
 import sys
 
-meme_channel = setting_data['meme_channel']
-only_meme_speak_channel = 692009239333437471 #681527553424621629
-auto_refresh_max = 6*3
-
-
 class Event(Cog_Extension):
-
+ 
     @commands.Cog.listener()
     async def on_member_join(self, member):
         channel = self.bot.get_channel(meme_channel)

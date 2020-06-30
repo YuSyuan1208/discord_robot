@@ -72,10 +72,10 @@ class Main(Cog_Extension):
 
     @commands.command()
     async def admin輸出(self, ctx):
-        admin = setting_data["admin"]
-        f = open("./data/admin.txt", "w")
-        f.write(f'{admin}')
+        f = open("./data/setting.json", "w")
+        f.write(f'{json.dumps(setting_data)}')
         f.close()
+
 
 def setup(bot):
     bot.add_cog(Main(bot))
