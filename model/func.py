@@ -20,7 +20,7 @@ run_out_before_look = setting_data['run_out_before_look']
 backup_channel_id = setting_data['backup_channel_id']  # 備份頻道
 only_meme_speak_channel = setting_data['only_meme_speak_channel']  # 清單頻道
 
-auto_refresh_max = 6*1
+auto_refresh_max = 5*1
 team_fight_function_enable = True
 """ --------------- Initial Parameter --------------- """
 

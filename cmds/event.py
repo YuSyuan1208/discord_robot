@@ -5,8 +5,9 @@ from core.classes import Cog_Extension
 from model.func import *
 import sys
 
+
 class Event(Cog_Extension):
- 
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         channel = self.bot.get_channel(meme_channel)
@@ -20,15 +21,6 @@ class Event(Cog_Extension):
     @commands.Cog.listener()
     async def on_message(self, msg):
         channel_id = msg.channel.id
-        """ if msg.channel.id == meme_channel:
-            print(f'Dc_msg: {msg.content}') """
-        """ if(channel_id == only_meme_speak_channel):
-            if(msg.author != self.bot.user):
-                # print(msg)
-                await msg.delete(delay=3)
-            else:
-                if(len(list_msg_tmp) < 7):
-                    list_msg_tmp.append(msg) """
         if(msg.content == "check_channel_id"):
             print(f'Dc_msg: {msg.channel.id}')
         if msg.content == '<:MeMe:616147400792342538>' and msg.author != self.bot.user:
@@ -48,12 +40,6 @@ class Event(Cog_Extension):
                 n = n + 1
                 if(n > number):
                     break
-            """ mgs = [] #Empty list to put all the messages in the log
-            number = int(
-                number) #Converting the amount of messages to delete to an integer
-            # Client.logs_from(ctx.message.channel, limit = number):
-            async for x in self.bot.logs_from(ctx.channel, limit = number):
-                mgs.append(x)"""
             await channel.delete_messages(mgs)
 
     @commands.command()
