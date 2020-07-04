@@ -1,10 +1,4 @@
 # coding=UTF-8
-""" 
-*help 
-*reload
-ython3 -m pip install discord.py
-"""
-
 import random
 import discord
 from discord.ext import commands
@@ -164,7 +158,7 @@ async def on_ready():
       msg_tip.append(await run_channel.send(content=f'資料同步開始'))
       now_week = now['周']
       now_king = 1
-      for i in range(0, auto_refresh_max):
+      for i in range(0, list_refresh_max_index):
           if([int(i / 6), int(i % 6)] in [[0, 5], [1, 5]]):
               continue
           #print("i",i,int(i / 6), int(i % 6))
@@ -190,7 +184,7 @@ async def on_ready():
 @bot.command()
 async def load(ctx, extension):
     author_id = ctx.author.id
-    if(id_check(author_id) == True):
+    if(admin_check(author_id) == True):
         bot.load_extension(f'cmds.{extension}')
         await ctx.send(f'Loaded {extension}')
 
@@ -198,7 +192,7 @@ async def load(ctx, extension):
 @bot.command()
 async def unload(ctx, extension):
     author_id = ctx.author.id
-    if(id_check(author_id) == True):
+    if(admin_check(author_id) == True):
         bot.unload_extension(f'cmds.{extension}')
         await ctx.send(f'Unloaded {extension}')
 
@@ -206,7 +200,7 @@ async def unload(ctx, extension):
 @bot.command()
 async def reload(ctx, extension):
     author_id = ctx.author.id
-    if(id_check(author_id) == True):
+    if(admin_check(author_id) == True):
         bot.reload_extension(f'cmds.{extension}')
         await ctx.send(f'Reloaded {extension}')
 

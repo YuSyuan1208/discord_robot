@@ -19,8 +19,9 @@ tea_fig_channel = setting_data['tea_fig_channel']  # 限制team_fight指令觸�
 run_out_before_look = setting_data['run_out_before_look']
 backup_channel_id = setting_data['backup_channel_id']  # 備份頻道
 only_meme_speak_channel = setting_data['only_meme_speak_channel']  # 清單頻道
-
-auto_refresh_max = 5*1
+list_refresh_week = 1
+list_refresh_king = 6
+list_refresh_max_index = list_refresh_king * list_refresh_week
 team_fight_function_enable = True
 """ --------------- Initial Parameter --------------- """
 
@@ -51,7 +52,7 @@ for i in range(1, len(All_OutKnife_Data)):
     All_OutKnife_Data[i]['補償清單'] = overflow
 
 
-def id_check(user_id):
+def admin_check(user_id):
     if user_id in setting_data["admin"]:
         return True
     return False
@@ -75,11 +76,17 @@ def tea_fig_KingIndexToKey(King_List, msg):
 
 def now_save():
     f = open("./data/now_data.json", "w")
-    f.write(f'{json.dumps(now)}')
+    f.write(f'{now}')
     f.close()
 
 
 def data_save():
     f = open("./data/data.json", "w")
-    f.write(f'{json.dumps(All_OutKnife_Data)}')
+    f.write(f'{All_OutKnife_Data}')
+    f.close()
+
+
+def admin_save():
+    f = open("./data/setting.json", "w")
+    f.write(f'{setting_data}')
     f.close()
