@@ -59,7 +59,7 @@ cancel_emoji = '🔄'
 overflow_emoji = '🔂'
 overflow_cancel_emoji = '🆖'
 
-limit_enable = False
+limit_enable = True
 
 # *刪除列表 / *Clear
 
@@ -714,6 +714,7 @@ class Team_Fight(Cog_Extension):
             change_week_ea = True
         now['王'] = king
         week = now['周']
+        meme_index = (week - now['周']) * 6 + king - 1
         force_week = now['force_week']
         king = tea_fig_KingIndexToKey(All_OutKnife_Data[week], king)
         SignUp_List = All_OutKnife_Data[week][king]["報名列表"]
@@ -740,7 +741,7 @@ class Team_Fight(Cog_Extension):
         await self.data輸出(ctx)
         await self.now輸出(ctx)
         await self.now_edit(ctx)
-
+        await self.meme_edit(ctx, week, king, meme_index)
         if(change_week_ea):
             await self.清單(ctx, 6)
             # await self.meme_edit(ctx, 'all') #不更新列表
