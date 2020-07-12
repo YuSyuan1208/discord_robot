@@ -5,7 +5,7 @@ from discord.ext import commands
 import json
 import os
 from model.func import *
-#import keep_alive
+import keep_alive
 import re
 
 team_fight_list_compare_enable = True
@@ -224,5 +224,5 @@ for filename in os.listdir('./cmds'):
         bot.load_extension(f'cmds.{filename[:-3]}')
 
 if __name__ == "__main__":
-    # keep_alive.keep_alive()
+    keep_alive.keep_alive()
     bot.run(setting_data['TOKEN'])
