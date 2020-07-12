@@ -5,7 +5,7 @@ from discord.ext import commands
 import json
 import os
 from model.func import *
-import keep_alive
+#import keep_alive
 import re
 
 team_fight_list_compare_enable = True
@@ -169,7 +169,7 @@ async def on_ready():
         now_week = now['周']
         now_king = 1
         for i in range(0, list_refresh_max_index):
-            if([int(i / 6), int(i % 6)] in [[0, 5], [1, 5]]):
+            if(i in bypass_list_index):
                 continue
             #print("i",i,int(i / 6), int(i % 6))
             week = int(i / 6) + now_week
@@ -224,5 +224,5 @@ for filename in os.listdir('./cmds'):
         bot.load_extension(f'cmds.{filename[:-3]}')
 
 if __name__ == "__main__":
-    keep_alive.keep_alive()
+    # keep_alive.keep_alive()
     bot.run(setting_data['TOKEN'])
