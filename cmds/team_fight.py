@@ -150,7 +150,7 @@ class Team_Fight(Cog_Extension):
 
         #tmp = f'{msg[0]}'.split(',')
         SignUp_List = All_OutKnife_Data[week][tmp[0]]["報名列表"]
-        damage_in = int(tmp[1])
+        damage_in = int(tmp[1]) if tmp[1] != '' else 0
         king_hp = All_OutKnife_Data[week][tmp[0]]["資訊"]["hp"]
 
         dc_re = [True, ""]
@@ -697,6 +697,7 @@ class Team_Fight(Cog_Extension):
                       pass_context=True)
     async def 下王(self, ctx):
         channel_id = ctx.channel.id
+        author_id = ctx.author.id
         ''' 權限 '''
         if(limit_enable):
             if (channel_id not in [run_out_before_look]):
@@ -704,6 +705,15 @@ class Team_Fight(Cog_Extension):
         channel_id = ctx.channel.id
         send_msg = ''
         king = now['王']
+        week = now['周']
+        msg_index = [msg_index for msg_index in list_msg_tmp if list_msg_tmp_id[king-1] in [msg_index[2].id]][0]
+        week_data = msg_index[0]
+        king_data = tea_fig_KingIndexToKey(All_OutKnife_Data[1], msg_index[1])
+        if(len(All_OutKnife_Data[week_data][king_data]['報名列表']) > 0):
+            used_list = [tmp['id'] for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
+            user_index = used_list.index(f'<@!{author_id}>')
+            await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
+
         king += 1
         change_week_ea = False
         if(king > 5):
@@ -713,7 +723,6 @@ class Team_Fight(Cog_Extension):
             now['force_week'] = week_tmp
             change_week_ea = True
         now['王'] = king
-        week = now['周']
         meme_index = (week - now['周']) * 6 + king - 1
         force_week = now['force_week']
         king = tea_fig_KingIndexToKey(All_OutKnife_Data[week], king)
