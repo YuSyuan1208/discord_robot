@@ -219,7 +219,7 @@ class Team_Fight(Cog_Extension):
         ''' 權限 '''
         if (admin_check(author_id) != True):
             if(limit_enable):
-                if (channel_id not in [tea_fig_channel, only_meme_speak_channel]):
+                if (channel_id not in [tea_fig_channel, only_meme_speak_channel,run_out_before_look]):
                     return 0
         try:
             week = int(msg[2])
