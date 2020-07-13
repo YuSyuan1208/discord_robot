@@ -715,7 +715,7 @@ class Team_Fight(Cog_Extension):
                 user_index = used_list.index(f'<@!{author_id}>')
                 await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
                 meme_index = (week - now['周']) * 6 + king - 1
-                await self.meme_edit(ctx,week,king,meme_index)
+                
                 
                 SignUp_List_tmp = All_OutKnife_Data[week_data][king_data]["報名列表"]
                 index_tmp = 0
@@ -725,6 +725,7 @@ class Team_Fight(Cog_Extension):
                         index_tmp += 1
                     else:
                         break
+                await self.meme_edit(ctx,week,king,meme_index)
             else:
                 return 0
         except:
