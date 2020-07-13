@@ -522,8 +522,7 @@ class Team_Fight(Cog_Extension):
                         except:
                             header_info = ""
 
-                        remaining = int(damage_info) - \
-                            tea_fig_PlusAllDamage(SignUp_List)
+                        remaining = 1 #int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
                         if(remaining > 0):
                             footer_info = f'預估剩餘{remaining}{unit}, 仍可報名'
                             if(header_info == ""):
@@ -581,8 +580,7 @@ class Team_Fight(Cog_Extension):
                     except:
                         header_info = ""
 
-                    remaining = int(damage_info) - \
-                        tea_fig_PlusAllDamage(SignUp_List)
+                    remaining =  1 #int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
 
                     if(remaining > 0):
                         footer_info = f'預估剩餘{remaining}{unit}, 仍可報名'
@@ -1296,7 +1294,7 @@ def tea_fig_list_func(ctx, msg):
     if(msg != "補償清單"):
         damage_info = f'{All_OutKnife_Data[week][msg]["資訊"]["hp"]}'
         header_info = All_OutKnife_Data[week][msg]["資訊"]["header"]
-        remaining = int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
+        remaining = 1 #int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
         if(remaining > 0):
             footer_info = f'預估剩餘{remaining}{unit}, 仍可報名'
             if(header_info == ""):
