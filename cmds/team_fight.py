@@ -704,14 +704,22 @@ class Team_Fight(Cog_Extension):
         send_msg = ''
         king = now['王']
         week = now['周']
-        msg_index = [msg_index for msg_index in list_msg_tmp if list_msg_tmp_id[king-1] in [msg_index[2].id]][0]
-        week_data = msg_index[0]
-        king_data = tea_fig_KingIndexToKey(All_OutKnife_Data[1], msg_index[1])
+       
         user_index = 0
-        if(len(All_OutKnife_Data[week_data][king_data]['報名列表']) > 0):
-            used_list = [tmp['id'] for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
-            user_index = used_list.index(f'<@!{author_id}>')
-            await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
+        try:
+            msg_index = [msg_index for msg_index in list_msg_tmp if list_msg_tmp_id[king-1] in [msg_index[2].id]][0]
+            week_data = msg_index[0]
+            king_data = tea_fig_KingIndexToKey(All_OutKnife_Data[1], msg_index[1])
+            if(len(All_OutKnife_Data[week_data][king_data]['報名列表']) > 0):
+                used_list = [tmp['id'] for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
+                user_index = used_list.index(f'<@!{author_id}>')
+                await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
+                meme_index = (week - now['周']) * 6 + king - 1
+                await self.meme_edit(ctx,week,king,meme_index)
+            else:
+                return 0
+        except:
+            return 0
 
         king += 1
         change_week_ea = False
