@@ -716,10 +716,21 @@ class Team_Fight(Cog_Extension):
                 await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
                 meme_index = (week - now['周']) * 6 + king - 1
                 await self.meme_edit(ctx,week,king,meme_index)
+                
+                SignUp_List_tmp = All_OutKnife_Data[week_data][king_data]["報名列表"]
+                index_tmp = 0
+                for v in SignUp_List_tmp:
+                    if index_tmp < user_index:
+                        v['出刀'] += 1
+                        index_tmp += 1
+                    else:
+                        break
             else:
                 return 0
         except:
             return 0
+        
+
 
         king += 1
         change_week_ea = False
@@ -742,7 +753,6 @@ class Team_Fight(Cog_Extension):
             over_id = ""
         send_msg += f'\n其餘完整刀準備(´﹀`)'
         tmp_index = 1
-        index_tmp = 0
         for v in SignUp_List:
             if tmp_index > king_enter_call_max:
                 break
@@ -752,9 +762,6 @@ class Team_Fight(Cog_Extension):
                 send_msg += f'\n{tmp_id}'
             else:
                 send_msg += f'\n~~{tmp_id}~~'
-            if index_tmp < user_index:
-                v['出刀'] += 1
-            index_tmp += 1
         await ctx.send(send_msg)
         await self.data輸出(ctx)
         await self.now輸出(ctx)
