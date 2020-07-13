@@ -707,6 +707,7 @@ class Team_Fight(Cog_Extension):
         msg_index = [msg_index for msg_index in list_msg_tmp if list_msg_tmp_id[king-1] in [msg_index[2].id]][0]
         week_data = msg_index[0]
         king_data = tea_fig_KingIndexToKey(All_OutKnife_Data[1], msg_index[1])
+        user_index = 0
         if(len(All_OutKnife_Data[week_data][king_data]['報名列表']) > 0):
             used_list = [tmp['id'] for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
             user_index = used_list.index(f'<@!{author_id}>')
@@ -733,6 +734,7 @@ class Team_Fight(Cog_Extension):
             over_id = ""
         send_msg += f'\n其餘完整刀準備(´﹀`)'
         tmp_index = 1
+        index_tmp = 0
         for v in SignUp_List:
             if tmp_index > king_enter_call_max:
                 break
@@ -742,8 +744,9 @@ class Team_Fight(Cog_Extension):
                 send_msg += f'\n{tmp_id}'
             else:
                 send_msg += f'\n~~{tmp_id}~~'
-
-            v['出刀'] += 1
+            if index_tmp < user_index:
+                v['出刀'] += 1
+            index_tmp += 1
         await ctx.send(send_msg)
         await self.data輸出(ctx)
         await self.now輸出(ctx)
