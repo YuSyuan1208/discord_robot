@@ -5,7 +5,7 @@ from discord.ext import commands
 import json
 import os
 from model.func import *
-import keep_alive
+#import keep_alive
 import re
 
 team_fight_list_compare_enable = True
@@ -94,7 +94,7 @@ async def on_ready():
 
         # try:
         # [list] compare data
-        all_list_changed_content = 0
+        all_list_changed_content = False
         oo_week_wmp = 0
         for msg_obj in msg_obj_list:
             list_changed_content = ''
@@ -149,7 +149,7 @@ async def on_ready():
                             l, {"id": dc_id, "傷害": dc_damage, "出刀": king_kill_index})
                     no += 1
             if(list_changed_content):
-                all_list_changed_content = 1
+                all_list_changed_content = True
                 change_content_list.append(list_changed_content)
                 await run_channel.send(content=list_changed_content)
                 # [list] backup data
@@ -158,6 +158,7 @@ async def on_ready():
                 msg_tip.append(await run_channel.send(content=f'備份完成'))
         if(all_list_changed_content):
             data_save()
+            now_save()
         msg_tip.append(await run_channel.send(content=f'報名清單 核對完畢'))
         """ except:
             error = f'報名清單 核對失敗，資料可能遺失'
@@ -224,5 +225,5 @@ for filename in os.listdir('./cmds'):
         bot.load_extension(f'cmds.{filename[:-3]}')
 
 if __name__ == "__main__":
-    keep_alive.keep_alive()
+    #keep_alive.keep_alive()
     bot.run(setting_data['TOKEN'])

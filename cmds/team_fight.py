@@ -219,7 +219,7 @@ class Team_Fight(Cog_Extension):
         ''' 權限 '''
         if (admin_check(author_id) != True):
             if(limit_enable):
-                if (channel_id not in [tea_fig_channel, only_meme_speak_channel,run_out_before_look]):
+                if (channel_id not in [tea_fig_channel, only_meme_speak_channel, run_out_before_look]):
                     return 0
         try:
             week = int(msg[2])
@@ -470,150 +470,38 @@ class Team_Fight(Cog_Extension):
             if(limit_enable):
                 if (channel_id not in [tea_fig_channel]):
                     return 0
-        try:
+        """ try:
             week = int(msg[1])
-        except:
-            week = now['周']
+        except: """
+        week = now['周']
         try:
             if(len(msg) == 0):
                 msg = "all"
             else:
                 msg = msg[0]
-            # print(msg)
-            img_url_list = {"1王": "https://cdn.discordapp.com/attachments/680402200077271106/680811820042551306/6e62cae5b99034b2b9678a230e95bd3e.png",
-                            "2王": "https://cdn.discordapp.com/attachments/680402200077271106/680811800367071318/73560c1aaabe170dff808615e0d0ff57.png",
-                            "3王": "https://cdn.discordapp.com/attachments/680402200077271106/680811758926954547/495320833c0277bfdba40f72aded6604.png",
-                            "4王": "https://cdn.discordapp.com/attachments/680402200077271106/680811780892524632/075dfe3f0ed8b627a0a8894d64c4313a.png",
-                            "5王": "https://cdn.discordapp.com/attachments/680402200077271106/680811732612022273/8f7f718840db69b983fbbf90a7a73401.png",
-                            "補償清單": "https://cdn.discordapp.com/attachments/680402200077271106/681015805110124554/616147400792342538.png"}
-            img_url = ""
-            unit_list = {"1王": "W",
-                         "2王": "W",
-                         "3王": "W",
-                         "4王": "W",
-                         "5王": "W",
-                         "補償清單": "S"}
-            unit = ""
-            embed_color_list = {"可報_無補": 0xaae3aa,
-                                "可報_有補": 0xffdc5e,
-                                "不可報": 0xe38fa5,
-                                "補償清單": 0xffffff}
-            embed_color = 0
             if msg == "all":
                 await ctx.send(f'```{force_week}周```')
-                for k in All_OutKnife_Data[week]:
-                    SignUp_List = All_OutKnife_Data[week][k]["報名列表"]
-
-                    try:
-                        img_url = img_url_list[k]
-                    except:
-                        img_url = ""
-                    try:
-                        unit = unit_list[k]
-                    except:
-                        unit = ""
-                    if(k != "補償清單"):
-                        try:
-                            damage_info = f'{All_OutKnife_Data[week][k]["資訊"]["hp"]}'
-                        except:
-                            damage_info = ""
-                        try:
-                            header_info = All_OutKnife_Data[week][k]["資訊"]["header"]
-                        except:
-                            header_info = ""
-
-                        remaining = 1 #int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
-                        if(remaining > 0):
-                            footer_info = f'預估剩餘{remaining}{unit}, 仍可報名'
-                            if(header_info == ""):
-                                embed_color = embed_color_list["可報_無補"]
-                            else:
-                                embed_color = embed_color_list["可報_有補"]
-                        elif(remaining <= 0):
-                            footer_info = f'預估剩餘{remaining}{unit}, 報名已截止'
-                            embed_color = embed_color_list["不可報"]
-                        set_author_name = f'{k} {damage_info}{unit}'
-                    else:
-                        damage_info = ""
-                        header_info = ""
-                        footer_info = '補償丟出去後記得使用指令刪除(๑•᎑•๑)'
-                        embed_color = embed_color_list["補償清單"]
-                        set_author_name = f'{k} {damage_info}'
-
-                    embed = discord.Embed(
-                        title=' ', description=header_info, color=embed_color)
-                    embed.set_author(name=set_author_name, icon_url=img_url)
-                    # embed.set_thumbnail(url=url[k])
-                    n = 1
-                    for k2 in SignUp_List:
-                        embed.add_field(
-                            name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit}', inline=False)
-                        n = n + 1
-                    embed.set_footer(text=footer_info)
-                    await ctx.send(embed=embed)
+                for k in range(0, len(All_OutKnife_Data[week])):
+                    tmp = tea_fig_list_func(ctx, [k+1, week])
+                    await ctx.send(embed=tmp[1])
             else:
-                try:
-                    msg = int(msg)
-                    if(len(All_OutKnife_Data[week]) >= int(msg)):
-                        king_key_list_tmp = list(
-                            All_OutKnife_Data[week].keys())
-                        msg = king_key_list_tmp[msg-1]
-                except:
-                    msg = msg
-                SignUp_List = All_OutKnife_Data[week][msg]["報名列表"]
-
-                try:
-                    img_url = img_url_list[msg]
-                except:
-                    img_url = ""
-                try:
-                    unit = unit_list[msg]
-                except:
-                    unit = ""
-                if(msg != "補償清單"):
-                    try:
-                        damage_info = f'{All_OutKnife_Data[week][msg]["資訊"]["hp"]}'
-                    except:
-                        damage_info = ""
-                    try:
-                        header_info = All_OutKnife_Data[week][msg]["資訊"]["header"]
-                    except:
-                        header_info = ""
-
-                    remaining =  1 #int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
-
-                    if(remaining > 0):
-                        footer_info = f'預估剩餘{remaining}{unit}, 仍可報名'
-                        if(header_info == ""):
-                            embed_color = embed_color_list["可報_無補"]
-                        else:
-                            embed_color = embed_color_list["可報_有補"]
-                    elif(remaining <= 0):
-                        footer_info = f'預估剩餘{remaining}{unit}, 報名已截止'
-                        embed_color = embed_color_list["不可報"]
-                    set_author_name = f'{msg} {damage_info}{unit}'
-                else:
-                    damage_info = ""
-                    header_info = ""
-                    footer_info = '補償丟出去後記得使用指令刪除(๑•᎑•๑)'
-                    embed_color = embed_color_list["補償清單"]
-                    set_author_name = f'{msg} {damage_info}'
-
-                embed = discord.Embed(
-                    title=' ', description=header_info, color=embed_color)
-                embed.set_author(name=set_author_name, icon_url=img_url)
-                # embed.set_thumbnail(url=)
-                n = 1
-                for k2 in SignUp_List:
-                    embed.add_field(
-                        name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit}', inline=False)
-                    n = n+1
-                embed.set_footer(text=footer_info)
+                tmp = tea_fig_list_func(ctx, [msg, week])
                 await ctx.send(f'```{force_week}周```')
-                await ctx.send(embed=embed)
+                await ctx.send(embed=tmp[1])
         except:
             await ctx.send("```arm\n欲查詢列表請標注特定王(ฅฅ*)\n``` ex. \*列表 all ,\*列表 ?王")
             print(sys.exc_info()[0])
+
+    @commands.command(name='補償清單',
+                      #description="Answers a yes/no question.",
+                      brief="Answers from the beyond.",
+                      aliases=['ol'],
+                      pass_context=True)
+    async def 補償清單(self, ctx):
+        SignUp_List = overflow['報名列表']
+        for i in SignUp_List:
+            await ctx.send(f'{i["id"]} {i["傷害"]}')
+
     """ ----------------- 報名相關指令 -----------------"""
 
     """ ----------------- 週數 -----------------"""
@@ -654,7 +542,7 @@ class Team_Fight(Cog_Extension):
         await ctx.send(f'切換周成功')
         await self.now輸出(ctx)
         await self.now_edit(ctx)
-        # await self.meme_edit(ctx, 'all')
+        await self.meme_edit(ctx, 'all')
 
     @commands.command(name='看王',
                       #description="Answers a yes/no question.",
@@ -704,19 +592,21 @@ class Team_Fight(Cog_Extension):
         send_msg = ''
         king = now['王']
         week = now['周']
-       
+
         user_index = 0
         try:
-            msg_index = [msg_index for msg_index in list_msg_tmp if list_msg_tmp_id[king-1] in [msg_index[2].id]][0]
+            msg_index = [
+                msg_index for msg_index in list_msg_tmp if list_msg_tmp_id[king-1] in [msg_index[2].id]][0]
             week_data = msg_index[0]
-            king_data = tea_fig_KingIndexToKey(All_OutKnife_Data[1], msg_index[1])
+            king_data = tea_fig_KingIndexToKey(
+                All_OutKnife_Data[1], msg_index[1])
             if(len(All_OutKnife_Data[week_data][king_data]['報名列表']) > 0):
-                used_list = [tmp['id'] for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
+                used_list = [tmp['id']
+                             for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
                 user_index = used_list.index(f'<@!{author_id}>')
                 await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
                 meme_index = (week - now['周']) * 6 + king - 1
-                
-                
+
                 SignUp_List_tmp = All_OutKnife_Data[week_data][king_data]["報名列表"]
                 index_tmp = 0
                 for v in SignUp_List_tmp:
@@ -725,13 +615,11 @@ class Team_Fight(Cog_Extension):
                         index_tmp += 1
                     else:
                         break
-                await self.meme_edit(ctx,week,king,meme_index)
+                await self.meme_edit(ctx, week, king, meme_index)
             else:
                 return 0
         except:
             return 0
-        
-
 
         king += 1
         change_week_ea = False
@@ -888,7 +776,7 @@ class Team_Fight(Cog_Extension):
             await ctx.send(f'限制周:{week}周')
 
     @commands.command()
-    async def chage_hp(self, ctx, msg):
+    async def change_hp(self, ctx, msg):
         print("test")
 
     @commands.command()
@@ -1303,6 +1191,7 @@ def tea_fig_list_func(ctx, msg):
     king_str = f'```{king}王```'
     try:
         msg = int(msg)
+        king_index = msg
         king_key_list_tmp = list(All_OutKnife_Data[week].keys())
         msg = king_key_list_tmp[msg-1]
     except:
@@ -1311,17 +1200,18 @@ def tea_fig_list_func(ctx, msg):
     img_url = img_url_list[msg]
     unit = unit_list[msg]
     if(msg != "補償清單"):
-        damage_info = f'{All_OutKnife_Data[week][msg]["資訊"]["hp"]}'
+        # f'{All_OutKnife_Data[week][msg]["資訊"]["hp"]}'
+        damage_info = f'{tea_figh_get_king_hp(now["force_week"], king_index)}'
         header_info = All_OutKnife_Data[week][msg]["資訊"]["header"]
-        remaining = 1 #int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
+        remaining = 1  # int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
         if(remaining > 0):
-            footer_info = f'預估剩餘{remaining}{unit}, 仍可報名'
+            footer_info = ""  # f'預估剩餘{remaining}{unit}, 仍可報名'
             if(header_info == ""):
                 embed_color = embed_color_list["可報_無補"]
             else:
                 embed_color = embed_color_list["可報_有補"]
         elif(remaining <= 0):
-            footer_info = f'預估剩餘{remaining}{unit}, 報名已截止'
+            footer_info = ""  # f'預估剩餘{remaining}{unit}, 報名已截止'
             embed_color = embed_color_list["不可報"]
         set_author_name = f'{msg} {damage_info}{unit}'
     else:
@@ -1343,6 +1233,28 @@ def tea_fig_list_func(ctx, msg):
     embed.set_footer(text=footer_info)
     # await ctx.send(f'```{week}周```')
     return [f'{week_str}', embed]
+
+
+def tea_figh_get_king_hp(week, king):
+    hp = 0
+    for i in king_hp_default:
+        mt = False
+        lt = False
+        if i[0]:
+            if week >= i[0]:
+                mt = True
+        else:
+            mt = True
+        if i[1]:
+            if week <= i[1]:
+                lt = True
+        else:
+            lt = True
+         #print(mt, lt, week, i)
+        if mt and lt:
+            hp = i[king+1]
+            break
+    return hp
 
 
 def event_damage_insert(payload):
