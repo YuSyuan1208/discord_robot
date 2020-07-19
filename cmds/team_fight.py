@@ -593,34 +593,46 @@ class Team_Fight(Cog_Extension):
         king = now['王']
         week = now['周']
 
+        # 清單人員比對
         user_index = 0
-        try:
-            msg_index = [
-                msg_index for msg_index in list_msg_tmp if list_msg_tmp_id[king-1] in [msg_index[2].id]][0]
-            week_data = msg_index[0]
-            king_data = tea_fig_KingIndexToKey(
-                All_OutKnife_Data[1], msg_index[1])
-            if(len(All_OutKnife_Data[week_data][king_data]['報名列表']) > 0):
-                used_list = [tmp['id']
-                             for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
-                user_index = used_list.index(f'<@!{author_id}>')
-                await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
-                meme_index = (week - now['周']) * 6 + king - 1
+        damage = 0
 
-                SignUp_List_tmp = All_OutKnife_Data[week_data][king_data]["報名列表"]
-                index_tmp = 0
-                for v in SignUp_List_tmp:
-                    if index_tmp < user_index:
-                        v['出刀'] += 1
-                        index_tmp += 1
-                    else:
-                        break
-                await self.meme_edit(ctx, week, king, meme_index)
-            else:
-                return 0
-        except:
+        # try:
+        msg_index = [
+            msg_index for msg_index in list_msg_tmp if list_msg_tmp_id[king-1] in [msg_index[2].id]][0]
+        week_data = msg_index[0]
+        king_data = tea_fig_KingIndexToKey(
+            All_OutKnife_Data[1], msg_index[1])
+        if(len(All_OutKnife_Data[week_data][king_data]['報名列表']) > 0):
+            used_list = [tmp['id']
+                         for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
+            user_index = used_list.index(f'<@!{author_id}>')
+            damage = All_OutKnife_Data[week_data][king_data]["報名列表"][user_index]["傷害"]
+            await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
+            meme_index = (week - now['周']) * 6 + king - 1
+            SignUp_List_tmp = All_OutKnife_Data[week_data][king_data]["報名列表"]
+            index_tmp = 0
+            for v in SignUp_List_tmp:
+                if index_tmp < user_index:
+                    v['出刀'] += 1
+                    index_tmp += 1
+                else:
+                    break
+        else:
+            return 0
+        # except:
+        #     print(sys.exc_info()[0])
+        #     return 0
+
+        # 傷害計算
+        now_king_left_hp = All_OutKnife_Data[week_data][king_data]["資訊"]["hp"]
+        now_king_left_hp -= damage
+        All_OutKnife_Data[week_data][king_data]["資訊"]["hp"] = now_king_left_hp
+        await self.meme_edit(ctx, week, king, meme_index)
+        if now_king_left_hp > 0:
             return 0
 
+        # 跳下一隻王
         king += 1
         change_week_ea = False
         if(king > 5):
@@ -632,10 +644,12 @@ class Team_Fight(Cog_Extension):
         now['王'] = king
         meme_index = (week - now['周']) * 6 + king - 1
         force_week = now['force_week']
-        king = tea_fig_KingIndexToKey(All_OutKnife_Data[week], king)
-        SignUp_List = All_OutKnife_Data[week][king]["報名列表"]
-        over_id = All_OutKnife_Data[week][king]["資訊"]["header"]
-        send_msg += f'{force_week}周{king}出了'
+        king_key = tea_fig_KingIndexToKey(All_OutKnife_Data[week], king)
+        All_OutKnife_Data[week][king_key]["資訊"]["hp"] = tea_figh_get_king_hp(
+            force_week, king)
+        SignUp_List = All_OutKnife_Data[week][king_key]["報名列表"]
+        over_id = All_OutKnife_Data[week][king_key]["資訊"]["header"]
+        send_msg += f'{force_week}周{king_key}出了'
         try:
             send_msg += f'，{over_id}補償先進去'
         except:
@@ -655,7 +669,7 @@ class Team_Fight(Cog_Extension):
         await self.data輸出(ctx)
         await self.now輸出(ctx)
         await self.now_edit(ctx)
-        await self.meme_edit(ctx, week, king, meme_index)
+        await self.meme_edit(ctx, week, king_key, meme_index)
         if(change_week_ea):
             await self.清單(ctx, 6)
             # await self.meme_edit(ctx, 'all') #不更新列表
@@ -775,9 +789,22 @@ class Team_Fight(Cog_Extension):
             week = now['limit_max_week']
             await ctx.send(f'限制周:{week}周')
 
-    @commands.command()
-    async def change_hp(self, ctx, msg):
-        print("test")
+    @commands.command(ame='血量變更',
+                      brief="Answers from the beyond.",
+                      aliases=['ch'],
+                      pass_context=True)
+    async def 血量變更(self, ctx, msg):
+        author_id = ctx.author.id
+        if(admin_check(author_id) != True):
+            return 0
+        week = now["周"]
+        force_week = now["force_week"]
+        king = now['王']
+        king_key = tea_fig_KingIndexToKey(All_OutKnife_Data[1], king)
+        All_OutKnife_Data[week][king_key]["資訊"]["hp"] = int(msg)
+        await ctx.send(f'{force_week}周{king_key}血量變更成功!')
+        meme_index = (week - now['周']) * 6 + king - 1
+        await self.meme_edit(ctx, week, king_key, meme_index)
 
     @commands.command()
     async def reset_team_fight_list(self, ctx, msg):
@@ -1059,11 +1086,10 @@ class Team_Fight(Cog_Extension):
                       error="error",
                       pass_context=True)
     async def test(self, ctx):
-
+        pass
         # print(overflow)
         # print(All_OutKnife_Data)
-        for i in list_msg_tmp:
-            print(i[0], i[1])
+        #
         # print(msg.id)
         # await ss.edit("test")
         # number_insert_msg.clear()
@@ -1196,23 +1222,25 @@ def tea_fig_list_func(ctx, msg):
         msg = king_key_list_tmp[msg-1]
     except:
         msg = msg
+        king_index = list(All_OutKnife_Data[week].keys()).index(msg) + 1
     SignUp_List = All_OutKnife_Data[week][msg]["報名列表"]
     img_url = img_url_list[msg]
     unit = unit_list[msg]
     if(msg != "補償清單"):
         # f'{All_OutKnife_Data[week][msg]["資訊"]["hp"]}'
         damage_info = f'{tea_figh_get_king_hp(now["force_week"], king_index)}'
+        left_hp = f'{All_OutKnife_Data[week][msg]["資訊"]["hp"]}'
         header_info = All_OutKnife_Data[week][msg]["資訊"]["header"]
-        remaining = 1  # int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
-        if(remaining > 0):
-            footer_info = ""  # f'預估剩餘{remaining}{unit}, 仍可報名'
-            if(header_info == ""):
-                embed_color = embed_color_list["可報_無補"]
-            else:
-                embed_color = embed_color_list["可報_有補"]
-        elif(remaining <= 0):
-            footer_info = ""  # f'預估剩餘{remaining}{unit}, 報名已截止'
-            embed_color = embed_color_list["不可報"]
+        # remaining = 1  # int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
+        # if(remaining > 0):
+        footer_info = f'預估剩餘血量:{left_hp}{unit}'
+        if(header_info == ""):
+            embed_color = embed_color_list["可報_無補"]
+        else:
+            embed_color = embed_color_list["可報_有補"]
+        # elif(remaining <= 0):
+        #     footer_info = ""  # f'預估剩餘:{remaining}{unit}, 報名已截止'
+        #     embed_color = embed_color_list["不可報"]
         set_author_name = f'{msg} {damage_info}{unit}'
     else:
         damage_info = ""

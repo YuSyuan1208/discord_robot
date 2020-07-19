@@ -8,7 +8,7 @@ from model.func import *
 import keep_alive
 import re
 
-team_fight_list_compare_enable = True
+team_fight_list_compare_enable = False
 all_function_enable = False
 
 bot = commands.Bot(
@@ -120,6 +120,18 @@ async def on_ready():
                 if(str(dc_description) != str(sys_description)) and (dc_description != discord.Embed.Empty):
                     list_changed_content += f'```arm\n{week_tmp}周{king_tmp} 補償刀:{sys_description} -> {dc_description}\n```'
                     All_OutKnife_Data[week_tmp][king_tmp]['資訊']['header'] = dc_description
+                # hp
+                if king_tmp != '補償清單':
+                    dc_footer = i.footer.text
+                    # print(dc_footer)
+                    dc_hp = dc_footer.split(':')[1].replace('W', '')
+                    sys_hp = All_OutKnife_Data[week_tmp][king_tmp]['資訊']['hp']
+                    #print(dc_hp, sys_hp)
+                    if(int(dc_hp) != int(sys_hp)):
+                        list_changed_content += f'```arm\n{week_tmp}周{king_tmp} 剩餘血量:{sys_hp} -> {dc_hp}\n```'
+                        All_OutKnife_Data[week_tmp][king_tmp]['資訊']['hp'] = int(
+                            dc_hp)
+
                 # 報名列表
                 for i2 in i.fields:
                     tmp = i2.value.split(' ', 1)
@@ -225,5 +237,5 @@ for filename in os.listdir('./cmds'):
         bot.load_extension(f'cmds.{filename[:-3]}')
 
 if __name__ == "__main__":
-    keep_alive.keep_alive()
+    # keep_alive.keep_alive()
     bot.run(setting_data['TOKEN'])
