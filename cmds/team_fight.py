@@ -482,10 +482,10 @@ class Team_Fight(Cog_Extension):
             if msg == "all":
                 await ctx.send(f'```{force_week}周```')
                 for k in range(0, len(All_OutKnife_Data[week])):
-                    tmp = tea_fig_list_func(ctx, [k+1, week])
+                    tmp = tea_fig_list_func([k+1, week])
                     await ctx.send(embed=tmp[1])
             else:
-                tmp = tea_fig_list_func(ctx, [msg, week])
+                tmp = tea_fig_list_func([msg, week])
                 await ctx.send(f'```{force_week}周```')
                 await ctx.send(embed=tmp[1])
         except:
@@ -581,14 +581,20 @@ class Team_Fight(Cog_Extension):
                       brief="Answers from the beyond.",
                       aliases=['finsh', 'f', '收'],
                       pass_context=True)
-    async def 下王(self, ctx):
+    async def 下王(self, ctx, *msg):
         channel_id = ctx.channel.id
         author_id = ctx.author.id
         ''' 權限 '''
         if(limit_enable):
             if (channel_id not in [run_out_before_look]):
                 return 0
-        channel_id = ctx.channel.id
+        if (admin_check(author_id) == True):
+            if(len(msg) > 0):
+                symbol_array = ['!', '@', '<', '>']
+                tmp_id = msg[0]
+                for i in symbol_array:
+                    tmp_id = tmp_id.replace(i, '')
+                author_id = int(tmp_id)
         send_msg = ''
         king = now['王']
         week = now['周']
@@ -872,7 +878,7 @@ class Team_Fight(Cog_Extension):
 
                     #print("周王",week, king)
                     # print(list_msg_tmp[i][2].id)
-                    re = tea_fig_list_func(ctx, [king, week])
+                    re = tea_fig_list_func([king, week])
                     list_msg_tmp[i][0] = week
                     list_msg_tmp[i][1] = tea_fig_KingIndexToKey(
                         All_OutKnife_Data[1], king)
@@ -888,12 +894,12 @@ class Team_Fight(Cog_Extension):
                 i = 17
             else: """
             i = msg[2]
-            re = tea_fig_list_func(ctx, [king, week])
+            re = tea_fig_list_func([king, week])
             await list_msg_tmp[i][2].edit(embed=re[1])
 
     @commands.command()
     async def meme_test(self, ctx):
-        #tmp = tea_fig_list_func(ctx, [1])
+        #tmp = tea_fig_list_func( [1])
         print(len(list_msg_tmp))
 
     """----------------- meme command -----------------"""
@@ -1086,6 +1092,7 @@ class Team_Fight(Cog_Extension):
                       error="error",
                       pass_context=True)
     async def test(self, ctx):
+        print(list_msg_tmp)
         pass
         # print(overflow)
         # print(All_OutKnife_Data)
@@ -1127,7 +1134,7 @@ class Team_Fight(Cog_Extension):
                     list_msg_tmp.append([0, 0, list_msg_empty()])
                     continue
                 number_insert_msg = [k, week]
-                tmp = tea_fig_list_func(ctx, number_insert_msg)
+                tmp = tea_fig_list_func(number_insert_msg)
                 s_msg = await ctx.send(embed=tmp[1])
                 await s_msg.add_reaction(sign_up_emoji)
                 await s_msg.add_reaction(cancel_emoji)
@@ -1203,7 +1210,7 @@ def tea_fig_DamageCheck(SignUp_List, damage_in, king_hp, author_id, in_id=-1):
     return new_OutKnife_Data '''
 
 
-def tea_fig_list_func(ctx, msg):
+def tea_fig_list_func(msg):
     try:
         week = int(msg[1])
     except:

@@ -8,7 +8,7 @@ from model.func import *
 import keep_alive
 import re
 
-team_fight_list_compare_enable = False
+team_fight_list_compare_enable = True
 all_function_enable = False
 
 bot = commands.Bot(
@@ -94,7 +94,6 @@ async def on_ready():
 
         # try:
         # [list] compare data
-        all_list_changed_content = False
         oo_week_wmp = 0
         for msg_obj in msg_obj_list:
             list_changed_content = ''
@@ -133,6 +132,9 @@ async def on_ready():
                             dc_hp)
 
                 # 報名列表
+                while(len(i.fields) < sys_list_len):
+                    sys_list_tmp.pop()
+                    sys_list_len-=1
                 for i2 in i.fields:
                     tmp = i2.value.split(' ', 1)
                     dc_id = tmp[0]
@@ -161,16 +163,14 @@ async def on_ready():
                             l, {"id": dc_id, "傷害": dc_damage, "出刀": king_kill_index})
                     no += 1
             if(list_changed_content):
-                all_list_changed_content = True
                 change_content_list.append(list_changed_content)
                 await run_channel.send(content=list_changed_content)
                 # [list] backup data
                 msg_tip.append(await run_channel.send(content=f'資料有更動，備份中'))
                 await backup_channel.send(content=list_changed_content)
                 msg_tip.append(await run_channel.send(content=f'備份完成'))
-        if(all_list_changed_content):
-            data_save()
-            now_save()
+        data_save()
+        now_save()
         msg_tip.append(await run_channel.send(content=f'報名清單 核對完畢'))
         """ except:
             error = f'報名清單 核對失敗，資料可能遺失'
@@ -201,6 +201,11 @@ async def on_ready():
         await backup_channel.send(content=f'系統重啟完成!')
 
     print('------')
+
+
+@bot.event
+async def on_resumed():
+    print('embed_color_list')
 
 
 @bot.command()
