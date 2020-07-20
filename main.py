@@ -134,7 +134,7 @@ async def on_ready():
                 # 報名列表
                 while(len(i.fields) < sys_list_len):
                     sys_list_tmp.pop()
-                    sys_list_len-=1
+                    sys_list_len -= 1
                 for i2 in i.fields:
                     tmp = i2.value.split(' ', 1)
                     dc_id = tmp[0]

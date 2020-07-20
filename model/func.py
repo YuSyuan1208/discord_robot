@@ -122,7 +122,7 @@ def data_save():
 
 def admin_save():
     f = open("./data/setting.json", "w")
-    f.write(f'{setting_data}')
+    f.write(json.dumps(setting_data))
     f.close()
 
 
