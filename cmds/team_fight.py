@@ -1138,9 +1138,9 @@ class Team_Fight(Cog_Extension):
                 s_msg = await ctx.send(embed=tmp[1])
                 await s_msg.add_reaction(sign_up_emoji)
                 await s_msg.add_reaction(cancel_emoji)
-                if(k != '補償清單'):
-                    await s_msg.add_reaction(overflow_emoji)
-                    await s_msg.add_reaction(overflow_cancel_emoji)
+                # if(k != '補償清單'):
+                #     await s_msg.add_reaction(overflow_emoji) 
+                #     await s_msg.add_reaction(overflow_cancel_emoji)
                 if(len(list_msg_tmp) < list_refresh_max_index):
                     list_msg_tmp.append([week, k, s_msg])
                     #print(week, k, len(list_msg_tmp))
