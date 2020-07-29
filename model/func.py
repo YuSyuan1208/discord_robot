@@ -28,7 +28,7 @@ if team_fight_function_enable:
     king_enter_call_max = 3  # 呼叫的打手的數目
     bypass_list_index = []  # 不顯示的表單ID
     king_hp_default = [[1, 10, 600, 800, 1000, 1200, 1500], [
-        11, 33, 700, 900, 1300, 1500, 2000], [34, False, 1500, 1600, 1800, 1900, 2000]]
+        11, 34, 700, 900, 1300, 1500, 2000], [35, False, 1500, 1600, 1800, 1900, 2000]]
 """ --------------- Initial Parameter --------------- """
 
 if team_fight_function_enable:
