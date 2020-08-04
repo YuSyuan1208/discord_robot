@@ -8,9 +8,6 @@ from model.func import *
 import keep_alive
 import re
 
-team_fight_list_compare_enable = True
-all_function_enable = False
-
 bot = commands.Bot(
     command_prefix=setting_data['BOT_PREFIX'], case_insensitive=True)
 
@@ -120,7 +117,7 @@ async def on_ready():
                     list_changed_content += f'```arm\n{week_tmp}周{king_tmp} 補償刀:{sys_description} -> {dc_description}\n```'
                     All_OutKnife_Data[week_tmp][king_tmp]['資訊']['header'] = dc_description
                 # hp
-                if king_tmp != '補償清單':
+                if king_tmp not in ['補償清單', '出刀清單']:
                     dc_footer = i.footer.text
                     # print(dc_footer)
                     dc_hp = dc_footer.split(':')[1].replace('W', '')
@@ -200,6 +197,21 @@ async def on_ready():
 
         await backup_channel.send(content=f'系統重啟完成!')
 
+    ''' list message object (測試用)'''
+    # [list] get data
+    meme_channel_obj = bot.get_channel(meme_channel)
+    only_meme_speak_channel_obj = bot.get_channel(only_meme_speak_channel)
+    run_channel = bot.get_channel(run_out_before_look)
+    backup_channel = bot.get_channel(backup_channel_id)
+    msg_obj_list = []
+    for id in list_msg_tmp_id:
+        # print(id) # message id
+        if id == 0:
+            msg_obj = list_msg_empty()
+        else:
+            msg_obj = await only_meme_speak_channel_obj.fetch_message(id)
+            msg_obj_list.append(msg_obj)
+        list_msg_tmp.append([0, 0, msg_obj])
     print('------')
 
 
@@ -242,5 +254,5 @@ for filename in os.listdir('./cmds'):
         bot.load_extension(f'cmds.{filename[:-3]}')
 
 if __name__ == "__main__":
-    keep_alive.keep_alive()
+    # keep_alive.keep_alive()
     bot.run(setting_data['TOKEN'])

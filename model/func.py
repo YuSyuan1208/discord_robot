@@ -7,13 +7,10 @@ with open('./data/reply_cmds.json', 'r', encoding='utf8') as jfile:
     reply_data = json.load(jfile)
 
 """ --------------- Initial Parameter --------------- """
+all_function_enable = False  # 未使用
+team_fight_list_compare_enable = False  # 重啟清單比對功能
 team_fight_function_enable = True  # 戰隊站功能
 if team_fight_function_enable:
-    All_OutKnife_Data = {}
-    now = {'周': 1, '王': 1, 'limit_max_week': 10, 'force_week': 1}
-    list_msg_tmp = []  # [week, king, msg]
-    now_msg = {}
-    number_insert_msg = {}  # [msg.id] = [user_id, week, king, msg]
     robot_id = setting_data['robot_id']  # robot自己的id代碼
     meme_channel = setting_data['meme_channel']  # 測試訊息用頻道
     # 限制team_fight指令觸發頻道(舊)無用
@@ -23,14 +20,24 @@ if team_fight_function_enable:
     backup_channel_id = setting_data['backup_channel_id']  # 備份頻道
     only_meme_speak_channel = setting_data['only_meme_speak_channel']  # 清單頻道
     list_refresh_week = 1  # 清單列表的循環次數(周)
-    list_refresh_king = 6  # 一次清單列表產生的表單數
+    list_refresh_king = 7  # 一次清單列表產生的表單數
     list_refresh_max_index = list_refresh_king * list_refresh_week  # 表單總數
     king_enter_call_max = 3  # 呼叫的打手的數目
     bypass_list_index = []  # 不顯示的表單ID
-    king_hp_default = [[1, 10, 600, 800, 1000, 1200, 1500], [
-        11, 34, 700, 900, 1300, 1500, 2000], [35, False, 1500, 1600, 1800, 1900, 2000]]
 """ --------------- Initial Parameter --------------- """
 
+""" --------------- Initial Data --------------- """
+if team_fight_function_enable:
+    All_OutKnife_Data = {}
+    now = {'周': 1, '王': 1, 'limit_max_week': 10, 'force_week': 1}
+    list_msg_tmp = []  # [week, king, msg]
+    now_msg = {}
+    number_insert_msg = {}  # [msg.id] = [user_id, week, king, msg]
+    king_hp_default = [[1, 10, 600, 800, 1000, 1200, 1500], [
+        11, 34, 700, 900, 1300, 1500, 2000], [35, False, 1500, 1600, 1800, 1900, 2000]]
+""" --------------- Initial Data --------------- """
+
+""" --------------- Getting Data --------------- """
 if team_fight_function_enable:
     with open('./data/data.json', 'r') as content_file:
         All_OutKnife_save_data = content_file.read()
@@ -49,14 +56,16 @@ if team_fight_function_enable:
         team_fight_setting_save_data = content_file.read()
     team_fight_setting = ast.literal_eval(team_fight_setting_save_data) """
 
-    for i in range(1, len(All_OutKnife_Data)):
+    for i in range(1, len(All_OutKnife_Data)+1):
         """ All_OutKnife_Data[i] = {'1王': {'資訊': {"header": "", "footer": "", "hp": 600}, '報名列表': []},
                                 '2王': {'資訊': {"header": "", "footer": "", "hp": 800}, '報名列表': []},
                                 '3王': {'資訊': {"header": "", "footer": "", "hp": 1000}, '報名列表': []},
                                 '4王': {'資訊': {"header": "", "footer": "", "hp": 1200}, '報名列表': []},
                                 '5王': {'資訊': {"header": "", "footer": "", "hp": 1500}, '報名列表': []}}
-        overflow = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []} """
+        overflow = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []}"""
+        ReportDamage = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []}
         All_OutKnife_Data[i]['補償清單'] = overflow
+        All_OutKnife_Data[i]['出刀清單'] = ReportDamage
 
     """ team_fight_setting = {'img_url_list': {'1王': "https://cdn.discordapp.com/attachments/680402200077271106/702486233976274954/a20f65fafc6ab134dee66e9e03b2e07e.png",
                                         '2王': "https://cdn.discordapp.com/attachments/680402200077271106/702486290012307517/75edbc7700db07e068ffbbe1e14fdf71.png",
@@ -84,6 +93,7 @@ if team_fight_function_enable:
                         'overflow_emoji': '🔂',
                         'overflow_cancel_emoji': '🆖'
                         } """
+""" --------------- Getting Data --------------- """
 
 
 def admin_check(user_id):

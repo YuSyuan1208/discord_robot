@@ -38,17 +38,20 @@ img_url_list = {"1王": "https://cdn.discordapp.com/attachments/6804022000772711
                 "3王": "https://cdn.discordapp.com/attachments/680402200077271106/702486362065993728/ee8ccd72f075340d5105c38903681e7b.png",
                 "4王": "https://cdn.discordapp.com/attachments/680402200077271106/702486425844580362/gateway-3-1.png",
                 "5王": "https://cdn.discordapp.com/attachments/680402200077271106/702486472317730816/gateway-4-1.png",
-                "補償清單": "https://cdn.discordapp.com/attachments/680402200077271106/681015805110124554/616147400792342538.png"}
+                "補償清單": "https://cdn.discordapp.com/attachments/680402200077271106/681015805110124554/616147400792342538.png",
+                "出刀清單":"https://cdn.discordapp.com/attachments/680402200077271106/681015805110124554/616147400792342538.png"}
 unit_list = {"1王": "W",
              "2王": "W",
              "3王": "W",
              "4王": "W",
              "5王": "W",
-             "補償清單": "S"}
+             "補償清單": "S",
+             "出刀清單": "W"}
 embed_color_list = {"可報_無補": 0xaae3aa,
                     "可報_有補": 0xffdc5e,
                     "不可報": 0xe38fa5,
-                    "補償清單": 0xffffff}
+                    "補償清單": 0xffffff,
+                    "出刀清單": 0xffffff,}
 
 
 number_emoji = ['0️⃣', '1️⃣', '2️⃣', '3️⃣',
@@ -116,9 +119,11 @@ class Team_Fight(Cog_Extension):
             if(limit_enable):
                 if (channel_id not in [tea_fig_channel, only_meme_speak_channel]):
                     return 0
+        
+        ''' 周、王判定 '''
         # try:
-        aaa = tea_fig_KingIndexToKey(All_OutKnife_Data[1], msg[0])
-        if(aaa == "補償清單"):
+        king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], msg[0])
+        if(king in ["補償清單","出刀清單"]):
             week = now['周']
         else:
             try:
@@ -138,10 +143,12 @@ class Team_Fight(Cog_Extension):
         tmp[0] = tea_fig_KingIndexToKey(All_OutKnife_Data[week], msg[0])
         tmp[1] = msg[1]
 
-        ''' meme deit '''
+        ''' meme deit index '''
         try:
             if(tmp[0] == "補償清單"):
                 meme_king = 6
+            elif(tmp[0] == "出刀清單"):
+                meme_king = 7
             else:
                 meme_king = int(tmp[0][0])
             meme_index = (week - now['周']) * 6 + meme_king - 1
@@ -155,10 +162,7 @@ class Team_Fight(Cog_Extension):
 
         dc_re = [True, ""]
         # print(tmp[0])
-        if(tmp[0] != "補償清單"):
-            dc_re = tea_fig_DamageCheck(
-                SignUp_List, damage_in, king_hp, author_id)
-        else:
+        if(tmp[0] == "補償清單"):
             tmp[2] = tea_fig_KingIndexToKey(All_OutKnife_Data[week], msg[2])
             try:
                 asd = All_OutKnife_Data[week][tmp[2]]
@@ -166,6 +170,13 @@ class Team_Fight(Cog_Extension):
                 await ctx.send(f'<@!{author_id}>王輸入錯誤 {delete_msg}', delete_after=delete_after)
                 return 0
             damage_in = f'{tmp[2]} {damage_in}'
+        elif(tmp[0] == "出刀清單"):
+            pass
+        elif(tmp[0] != "補償清單"):
+            dc_re = tea_fig_DamageCheck(
+                SignUp_List, damage_in, king_hp, author_id)
+        
+        
         if(dc_re[0] == False):
             await ctx.send(f'{dc_re[1]}{delete_msg}', delete_after=delete_after)
             return 0
@@ -180,6 +191,8 @@ class Team_Fight(Cog_Extension):
                     if(week <= now['周'] + 2):
                         # print('meme_edit')
                         await self.meme_edit(ctx, week, meme_king, meme_index)
+                elif(tmp[0] == "出刀清單"):
+                    pass
                 else:
                     send_msg = f'<@!{author_id}>{force_week}周{tmp[0]}報名成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}'
                     await ctx.send(send_msg, delete_after=delete_after)
@@ -235,6 +248,8 @@ class Team_Fight(Cog_Extension):
             try:
                 if(tmp[0] == "補償清單"):
                     meme_king = 6
+                elif(tmp[0] == "出刀清單"):
+                    meme_king = 7
                 else:
                     meme_king = int(tmp[0][0])
                 meme_index = (week - now['周']) * 6 + meme_king - 1
@@ -288,8 +303,8 @@ class Team_Fight(Cog_Extension):
             #tmp = f'{msg[0]}'.split(',')
             tmp = {}
             tmp[0] = tea_fig_KingIndexToKey(All_OutKnife_Data[week], msg[0])
-            if(tmp[0] == "補償清單"):
-                await ctx.send(f'<@!{author_id}>補償清單不開放修改喔(๑•́︿•̀๑) ')
+            if(tmp[0] in ["補償清單","出刀清單"]):
+                await ctx.send(f'<@!{author_id}>{tmp[0]}不開放修改喔(๑•́︿•̀๑) ')
                 return 0
             tmp[1] = msg[1]
             tmp[2] = msg[2]
@@ -305,7 +320,7 @@ class Team_Fight(Cog_Extension):
             king_hp = All_OutKnife_Data[week][tmp[0]]["資訊"]["hp"]
 
             dc_re = [True, ""]
-            if(tmp[0] != "補償清單"):
+            if(tmp[0] not in ["補償清單","出刀清單"]):
                 dc_re = tea_fig_DamageCheck(
                     SignUp_List, damage_in, king_hp, author_id,  in_id)
             if(dc_re[0] == False):
@@ -441,6 +456,8 @@ class Team_Fight(Cog_Extension):
                 try:
                     if(sel_king == "補償清單"):
                         meme_king = 6
+                    elif(sel_king == "出刀清單"):
+                        meme_king = 7
                     else:
                         meme_king = int(msg[0].split('王')[0])
                     meme_index = (week - now['周']) * 6 + meme_king - 1
@@ -827,6 +844,7 @@ class Team_Fight(Cog_Extension):
                                         '5王': {'資訊': {"header": "", "footer": "", "hp": 1500}, '報名列表': []}}
 
                 All_OutKnife_Data[i]['補償清單'] = overflow_tmp
+                All_OutKnife_Data[i]['出刀清單'] = ReportDamage
             await self.data輸出(ctx)
 
     @commands.command()
@@ -835,6 +853,7 @@ class Team_Fight(Cog_Extension):
         if(admin_check(author_id) == True):
             for i in range(int(msg1), int(msg2)+1):
                 All_OutKnife_Data[i]['補償清單'] = overflow
+                All_OutKnife_Data[i]['出刀清單'] = ReportDamage
                 ''' All_OutKnife_Data[i] = {'1王': {'資訊': {"header": "", "footer": "", "hp": 600}, '報名列表': []},
                                 '2王': {'資訊': {"header": "", "footer": "", "hp": 800}, '報名列表': []},
                                 '3王': {'資訊': {"header": "", "footer": "", "hp": 1000}, '報名列表': []},
@@ -873,8 +892,8 @@ class Team_Fight(Cog_Extension):
                     if(i in bypass_list_index):
                         continue
                     #print("i",i,int(i / 6), int(i % 6))
-                    week = int(i / 6) + now_week
-                    king = int(i % 6) + now_king
+                    week = int(i / list_refresh_king) + now_week
+                    king = int(i % list_refresh_king) + now_king
 
                     #print("周王",week, king)
                     # print(list_msg_tmp[i][2].id)
@@ -934,9 +953,12 @@ class Team_Fight(Cog_Extension):
                     All_OutKnife_Data[1], msg_index[1])
 
                 #print(week, king)
+                print(king)
                 if(king == '補償清單'):
                     await channel.send(f'<@!{user_id}>你準備報名{king} (3秒後清除)', delete_after=3)
                     await self.enter_to_overflow_list_from_emoji(channel, user_id, week, king)
+                elif(king == '出刀清單'):
+                    return 0
                 else:
                     await channel.send(f'<@!{user_id}>你準備報名{force_week}周{king} (3秒後清除)', delete_after=3)
                     await self.enter_to_king_from_emoji(channel, user_id, week, king)
@@ -974,7 +996,7 @@ class Team_Fight(Cog_Extension):
                 week = msg_index[0]
                 king = tea_fig_KingIndexToKey(
                     All_OutKnife_Data[1], msg_index[1])
-                if(king == '補償清單'):
+                if(king in ['補償清單','出刀清單']):
                     return 0
                 await channel.send(f'<@!{user_id}>你準備報名{king}補償刀 (3秒後清除)', delete_after=3)
                 await self.enter_to_overflow_from_emoji(channel, user_id, week, king)
@@ -1017,6 +1039,8 @@ class Team_Fight(Cog_Extension):
                         await number_insert_msg[payload.message_id][3].delete()
                         del number_insert_msg[payload.message_id]
                         await self.報名(channel, king, insert_sec, info, user_id)
+                elif(king == "出刀清單"):
+                    pass
                 else:
                     default_content = msg.content.split(':', 1)[0]
                     info = msg.content.split(':', 1)[1]
@@ -1092,7 +1116,7 @@ class Team_Fight(Cog_Extension):
                       error="error",
                       pass_context=True)
     async def test(self, ctx):
-        print(list_msg_tmp)
+        print(list(All_OutKnife_Data[1].keys()).index("出刀清單") + 1)
         pass
         # print(overflow)
         # print(All_OutKnife_Data)
@@ -1233,7 +1257,7 @@ def tea_fig_list_func(msg):
     SignUp_List = All_OutKnife_Data[week][msg]["報名列表"]
     img_url = img_url_list[msg]
     unit = unit_list[msg]
-    if(msg != "補償清單"):
+    if(msg not in ["補償清單","出刀清單"]):
         # f'{All_OutKnife_Data[week][msg]["資訊"]["hp"]}'
         damage_info = f'{tea_figh_get_king_hp(now["force_week"], king_index)}'
         left_hp = f'{All_OutKnife_Data[week][msg]["資訊"]["hp"]}'
@@ -1249,7 +1273,13 @@ def tea_fig_list_func(msg):
         #     footer_info = ""  # f'預估剩餘:{remaining}{unit}, 報名已截止'
         #     embed_color = embed_color_list["不可報"]
         set_author_name = f'{msg} {damage_info}{unit}'
-    else:
+    elif(msg == "補償清單"):
+        damage_info = ""
+        header_info = ""
+        footer_info = '補償丟出去後記得使用指令刪除(๑•᎑•๑)'
+        embed_color = embed_color_list["補償清單"]
+        set_author_name = f'{msg} {damage_info}'
+    elif(msg == "出刀清單"):
         damage_info = ""
         header_info = ""
         footer_info = '補償丟出去後記得使用指令刪除(๑•᎑•๑)'
