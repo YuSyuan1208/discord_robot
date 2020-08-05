@@ -157,7 +157,7 @@ async def on_ready():
                         except:
                             pass
                         sys_list_tmp.insert(
-                            l, {"id": dc_id, "傷害": dc_damage, "出刀": king_kill_index})
+                            l, {"id": dc_id, "傷害": dc_damage, "呼叫": king_kill_index})
                     no += 1
             if(list_changed_content):
                 change_content_list.append(list_changed_content)
@@ -182,8 +182,8 @@ async def on_ready():
             if(i in bypass_list_index):
                 continue
             #print("i",i,int(i / 6), int(i % 6))
-            week = int(i / 6) + now_week
-            king = int(i % 6) + now_king
+            week = int(i / list_refresh_king) + now_week
+            king = int(i % list_refresh_king) + now_king
             #print("周王",week, king)
             # print(list_msg_tmp[i][2].id)
             list_msg_tmp[i][0] = week
@@ -199,19 +199,33 @@ async def on_ready():
 
     ''' list message object (測試用)'''
     # [list] get data
-    meme_channel_obj = bot.get_channel(meme_channel)
-    only_meme_speak_channel_obj = bot.get_channel(only_meme_speak_channel)
-    run_channel = bot.get_channel(run_out_before_look)
-    backup_channel = bot.get_channel(backup_channel_id)
-    msg_obj_list = []
-    for id in list_msg_tmp_id:
-        # print(id) # message id
-        if id == 0:
-            msg_obj = list_msg_empty()
-        else:
-            msg_obj = await only_meme_speak_channel_obj.fetch_message(id)
-            msg_obj_list.append(msg_obj)
-        list_msg_tmp.append([0, 0, msg_obj])
+    if not team_fight_list_compare_enable:
+        meme_channel_obj = bot.get_channel(meme_channel)
+        only_meme_speak_channel_obj = bot.get_channel(only_meme_speak_channel)
+        run_channel = bot.get_channel(run_out_before_look)
+        backup_channel = bot.get_channel(backup_channel_id)
+        msg_obj_list = []
+        for id in list_msg_tmp_id:
+            # print(id) # message id
+            if id == 0:
+                msg_obj = list_msg_empty()
+            else:
+                msg_obj = await only_meme_speak_channel_obj.fetch_message(id)
+                msg_obj_list.append(msg_obj)
+            list_msg_tmp.append([0, 0, msg_obj])
+        now_week = now['周']
+        now_king = 1
+        for i in range(0, list_refresh_max_index):
+            if(i in bypass_list_index):
+                continue
+            #print("i",i,int(i / 6), int(i % 6))
+            week = int(i / list_refresh_king) + now_week
+            king = int(i % list_refresh_king) + now_king
+            #print("周王",week, king)
+            # print(list_msg_tmp[i][2].id)
+            list_msg_tmp[i][0] = week
+            list_msg_tmp[i][1] = tea_fig_KingIndexToKey(
+                All_OutKnife_Data[1], king)
     print('------')
 
 

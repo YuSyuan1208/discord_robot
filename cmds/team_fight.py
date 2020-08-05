@@ -62,8 +62,6 @@ cancel_emoji = '🔄'
 overflow_emoji = '🔂'
 overflow_cancel_emoji = '🆖'
 
-limit_enable = True
-
 # *刪除列表 / *Clear
 
 
@@ -141,7 +139,7 @@ class Team_Fight(Cog_Extension):
             return 0
         tmp = {}
         tmp[0] = tea_fig_KingIndexToKey(All_OutKnife_Data[week], msg[0])
-        tmp[1] = msg[1]
+        tmp[1] = msg[1] if len(msg) > 1 else ''
 
         ''' meme deit index '''
         try:
@@ -155,11 +153,13 @@ class Team_Fight(Cog_Extension):
         except:
             print("meme_edit para fail")
 
+        ''' 清單資訊獲取 '''
         #tmp = f'{msg[0]}'.split(',')
         SignUp_List = All_OutKnife_Data[week][tmp[0]]["報名列表"]
         damage_in = int(tmp[1]) if tmp[1] != '' else 0
         king_hp = All_OutKnife_Data[week][tmp[0]]["資訊"]["hp"]
 
+        ''' 報名參數規則判定 '''
         dc_re = [True, ""]
         # print(tmp[0])
         if(tmp[0] == "補償清單"):
@@ -175,24 +175,24 @@ class Team_Fight(Cog_Extension):
         elif(tmp[0] != "補償清單"):
             dc_re = tea_fig_DamageCheck(
                 SignUp_List, damage_in, king_hp, author_id)
-        
-        
         if(dc_re[0] == False):
             await ctx.send(f'{dc_re[1]}{delete_msg}', delete_after=delete_after)
             return 0
+
+        ''' 報名資料存入 '''
         if (tmp[0] in All_OutKnife_Data[week].keys()):
-            if (tea_fig_column(SignUp_List, author_id) < 2):
+            if (tea_fig_column(SignUp_List, author_id) < 1):
                 l = len(SignUp_List)
                 SignUp_List.insert(
-                    l, {"id": f'<@!{author_id}>', "傷害": damage_in, "出刀": 0})
+                    l, {"id": f'<@!{author_id}>', "傷害": damage_in, "呼叫": 0})
                 if(tmp[0] == "補償清單"):
 
                     await ctx.send(f'<@!{author_id}>{tmp[0]}報名成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}', delete_after=delete_after)
-                    if(week <= now['周'] + 2):
+                    """ if(week <= now['周'] + 2):
                         # print('meme_edit')
-                        await self.meme_edit(ctx, week, meme_king, meme_index)
+                        await self.meme_edit(ctx, week, meme_king, meme_index) """
                 elif(tmp[0] == "出刀清單"):
-                    pass
+                    await ctx.send(f'<@!{author_id}>{tmp[0]}進場成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}', delete_after=delete_after)
                 else:
                     send_msg = f'<@!{author_id}>{force_week}周{tmp[0]}報名成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}'
                     await ctx.send(send_msg, delete_after=delete_after)
@@ -200,11 +200,11 @@ class Team_Fight(Cog_Extension):
                         channel2 = self.bot.get_channel(run_out_before_look)
                         await channel2.send(send_msg)
 
-                    if(week <= now['周'] + 2):
-                        # print('meme_edit')
-                        await self.meme_edit(ctx, week, meme_king, meme_index)
+                if(week <= now['周'] + 2):
+                    # print('meme_edit')
+                    await self.meme_edit(ctx, week, meme_king, meme_index)
             else:
-                await ctx.send(f'<@!{author_id}>報名失敗, 已在列表中或超過上限(最多2筆){delete_msg}', delete_after=delete_after)
+                await ctx.send(f'<@!{author_id}>報名失敗, 已在列表中或超過上限(最多1筆){delete_msg}', delete_after=delete_after)
         await self.data輸出(ctx)
         """ except:
             await ctx.send(tea_fig_error_message())#f'<@!{author_id}>報名失敗，請確認有沒有錯字或超出範圍以及預估傷害(´•ω•｀)\nEx. *報名 ?王 100(預估傷害)\nEx. *報名 補償清單(6) 100(剩餘秒數) ?王')
@@ -508,7 +508,9 @@ class Team_Fight(Cog_Extension):
         except:
             await ctx.send("```arm\n欲查詢列表請標注特定王(ฅฅ*)\n``` ex. \*列表 all ,\*列表 ?王")
             print(sys.exc_info()[0])
+    """ ----------------- 報名相關指令 -----------------"""
 
+    """ ----------------- 補償相關指令 -----------------"""
     @commands.command(name='補償清單',
                       #description="Answers a yes/no question.",
                       brief="Answers from the beyond.",
@@ -519,7 +521,15 @@ class Team_Fight(Cog_Extension):
         for i in SignUp_List:
             await ctx.send(f'{i["id"]} {i["傷害"]}')
 
-    """ ----------------- 報名相關指令 -----------------"""
+    """ ----------------- 補償相關指令 -----------------"""
+
+    """ ----------------- 出刀相關指令 -----------------"""
+    @commands.command(name='進場',
+                      aliases=['in'],
+                      pass_context=True)
+    async def 進場(self, ctx):
+        await self.報名(ctx,7)
+    """ ----------------- 出刀相關指令 -----------------"""
 
     """ ----------------- 週數 -----------------"""
     @commands.command()
@@ -637,7 +647,8 @@ class Team_Fight(Cog_Extension):
             index_tmp = 0
             for v in SignUp_List_tmp:
                 if index_tmp < user_index:
-                    v['出刀'] += 1
+                    print(v['呼叫'])
+                    v['呼叫'] += 1
                     index_tmp += 1
                 else:
                     break
@@ -683,7 +694,7 @@ class Team_Fight(Cog_Extension):
             if tmp_index > king_enter_call_max:
                 break
             tmp_id = v['id']
-            if v['出刀'] == 0:
+            if v['呼叫'] == 0:
                 tmp_index += 1
                 send_msg += f'\n{tmp_id}'
             else:
@@ -953,7 +964,6 @@ class Team_Fight(Cog_Extension):
                     All_OutKnife_Data[1], msg_index[1])
 
                 #print(week, king)
-                print(king)
                 if(king == '補償清單'):
                     await channel.send(f'<@!{user_id}>你準備報名{king} (3秒後清除)', delete_after=3)
                     await self.enter_to_overflow_list_from_emoji(channel, user_id, week, king)
@@ -1116,7 +1126,10 @@ class Team_Fight(Cog_Extension):
                       error="error",
                       pass_context=True)
     async def test(self, ctx):
-        print(list(All_OutKnife_Data[1].keys()).index("出刀清單") + 1)
+        print(list_msg_tmp_id)
+        for i in list_msg_tmp:
+            print(i[0],i[1])
+        print(All_OutKnife_Data[1]["出刀清單"]["報名列表"])
         pass
         # print(overflow)
         # print(All_OutKnife_Data)
@@ -1282,7 +1295,7 @@ def tea_fig_list_func(msg):
     elif(msg == "出刀清單"):
         damage_info = ""
         header_info = ""
-        footer_info = '補償丟出去後記得使用指令刪除(๑•᎑•๑)'
+        footer_info = '換王後會自動清除喔(๑•᎑•๑)'
         embed_color = embed_color_list["補償清單"]
         set_author_name = f'{msg} {damage_info}'
 
@@ -1293,7 +1306,7 @@ def tea_fig_list_func(msg):
     n = 1
     for k2 in SignUp_List:
         embed.add_field(
-            name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit},{k2["出刀"]}', inline=False)
+            name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit},{k2["呼叫"]}', inline=False)
         n = n+1
     embed.set_footer(text=footer_info)
     # await ctx.send(f'```{week}周```')
