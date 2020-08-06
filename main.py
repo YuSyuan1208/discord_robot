@@ -135,7 +135,7 @@ async def on_ready():
                 for i2 in i.fields:
                     tmp = i2.value.split(' ', 1)
                     dc_id = tmp[0]
-                    dc_damage = tmp[1].replace('W', '').replace('S', '')
+                    dc_damage = tmp[1].replace('W', '').replace('S', '').spilt('|')[0]
                     tmp_tmp = dc_damage.split(',', 1)
                     king_kill_index = int(tmp_tmp[1])
                     dc_damage = tmp_tmp[0]
@@ -199,7 +199,7 @@ async def on_ready():
 
     ''' list message object (測試用)'''
     # [list] get data
-    if not team_fight_list_compare_enable:
+    if not team_fight_list_compare_enable and team_fight_function_enable:
         meme_channel_obj = bot.get_channel(meme_channel)
         only_meme_speak_channel_obj = bot.get_channel(only_meme_speak_channel)
         run_channel = bot.get_channel(run_out_before_look)

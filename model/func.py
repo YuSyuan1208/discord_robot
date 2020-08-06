@@ -26,6 +26,7 @@ if team_fight_function_enable:
     list_refresh_max_index = list_refresh_king * list_refresh_week  # 表單總數
     king_enter_call_max = 3  # 呼叫的打手的數目
     bypass_list_index = []  # 不顯示的表單ID
+    list_max_enter = 1  # 單張清單最多可報名次數
 """ --------------- Initial Parameter --------------- """
 
 """ --------------- Initial Data --------------- """

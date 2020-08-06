@@ -26,7 +26,7 @@ class Event(Cog_Extension):
         if msg.content == '<:MeMe:616147400792342538>' and msg.author != self.bot.user:
             await msg.channel.send('<:MeMe:616147400792342538>')
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def cleartest(self, ctx, number):
         channel_id = ctx.channel.id
         # print(channel_id)
