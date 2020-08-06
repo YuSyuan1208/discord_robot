@@ -180,10 +180,10 @@ class Team_Fight(Cog_Extension):
 
         ''' 報名資料存入 '''
         if (tmp[0] in All_OutKnife_Data[week].keys()):
-            if (len(tea_fig_list_check(SignUp_List, author_id)) < list_max_enter):
+            if (len(tea_fig_list_check(SignUp_List, f'<@!{author_id}>')) < list_max_enter):
                 l = len(SignUp_List)
                 SignUp_List.insert(
-                    l, {"id": f'<@!{author_id}>', "傷害": damage_in, "呼叫": 0, "進場":0})
+                    l, {"id": f'<@!{author_id}>', "傷害": damage_in, "呼叫": 0, "進場": 0})
                 if(tmp[0] == "補償清單"):
 
                     await ctx.send(f'<@!{author_id}>{tmp[0]}報名成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}', delete_after=delete_after)
@@ -191,6 +191,7 @@ class Team_Fight(Cog_Extension):
                         # print('meme_edit')
                         await self.meme_edit(ctx, week, meme_king, meme_index) """
                 elif(tmp[0] == "出刀清單"):
+                    tea_fig_cut_out_list_sort()
                     await ctx.send(f'<@!{author_id}>{tmp[0]}進場成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}', delete_after=delete_after)
                 else:
                     send_msg = f'<@!{author_id}>{force_week}周{tmp[0]}報名成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}'
@@ -519,7 +520,16 @@ class Team_Fight(Cog_Extension):
     @commands.command(name='進場',
                       aliases=['in'])
     async def 進場(self, ctx):
-        await self.報名(ctx, 7)
+        author_id = ctx.author.id
+        week = now['周']
+        king_index = now['王']
+        king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], king_index)
+        SignUp_List = All_OutKnife_Data[week][king]['報名列表']
+        index = tea_fig_list_check(SignUp_List, f'<@!{author_id}>')
+        if len(index) > 0:
+            await self.報名(ctx, 7, index[0])
+        else:
+            await ctx.send(f'<@!{author_id}>尚未報名{week}周{king}清單')
 
     @commands.command(name='回報',
                       aliases=['re'])
@@ -531,7 +541,7 @@ class Team_Fight(Cog_Extension):
             damage = int(msg[0])
         except:
             await ctx.send(f'<@!{author_id}>傷害輸入錯誤')
-            return False            
+            return False
         info = {'傷害': damage, '備註': ' '.join(msg[1:])}
         meme_index = (week - now['周']) * list_refresh_king + king - 1
         SignUp_List_tmp = All_OutKnife_Data[week]['出刀清單']["報名列表"]
@@ -910,7 +920,7 @@ class Team_Fight(Cog_Extension):
             now_week = now['周']
             now_king = 1
             for i in range(0, list_refresh_max_index):
-                #try:
+                # try:
                 if(i in bypass_list_index):
                     continue
                 #print("i",i,int(i / 6), int(i % 6))
@@ -924,8 +934,8 @@ class Team_Fight(Cog_Extension):
                 list_msg_tmp[i][1] = tea_fig_KingIndexToKey(
                     All_OutKnife_Data[1], king)
                 await list_msg_tmp[i][2].edit(embed=re[1])
-                #except:
-                    #print(f'{week} {king} msg not find')
+                # except:
+                #print(f'{week} {king} msg not find')
 
         else:
             # print(msg)
@@ -974,7 +984,7 @@ class Team_Fight(Cog_Extension):
                 king = tea_fig_KingIndexToKey(
                     All_OutKnife_Data[1], msg_index[1])
                 SignUp_List = All_OutKnife_Data[week][king]["報名列表"]
-                if(len(tea_fig_list_check(SignUp_List, user_id)) >= list_max_enter):
+                if(len(tea_fig_list_check(SignUp_List, f'<@!{user_id}>')) >= list_max_enter):
                     await channel.send(f'<@!{user_id}>報名失敗, 已在列表中或超過上限(最多1筆)(3秒後清除)', delete_after=3)
                     return 0
 
@@ -1186,8 +1196,9 @@ class Team_Fight(Cog_Extension):
                 number_insert_msg = [k, week]
                 tmp = tea_fig_list_func(number_insert_msg)
                 s_msg = await ctx.send(embed=tmp[1])
-                await s_msg.add_reaction(sign_up_emoji)
-                await s_msg.add_reaction(cancel_emoji)
+                if(k != '出刀清單'):
+                    await s_msg.add_reaction(sign_up_emoji)
+                    await s_msg.add_reaction(cancel_emoji)
                 # if(k != '補償清單'):
                 #     await s_msg.add_reaction(overflow_emoji)
                 #     await s_msg.add_reaction(overflow_cancel_emoji)
@@ -1213,14 +1224,14 @@ def setup(bot):
     bot.add_cog(Team_Fight(bot))
 
 
-def tea_fig_list_check(matrix, author_id):
+def tea_fig_list_check(matrix, author_str):
     """ 確認人員在列表內，回傳index列表 """
     result = []
     index = 0
     for v in matrix:
         """ print(v)
         print(f'<@!{author_id}>')  """
-        if(v["id"] == f'<@!{author_id}>'):
+        if(v["id"] == f'{author_str}'):
             result.append(index)
         index += 1
     return result
@@ -1329,7 +1340,7 @@ def tea_fig_list_func(msg):
                 name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit}', inline=False)
         elif(msg == "出刀清單"):
             embed.add_field(
-                name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit} {remark}', inline=False)
+                name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit}{remark}', inline=False)
         else:
             embed.add_field(
                 name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit},{k2["呼叫"]},{k2["進場"]}', inline=False)
@@ -1364,13 +1375,28 @@ def tea_fig_get_king_hp(week, king):
 
 def tea_fig_enter_info_change(SignUp_List, id, info):
     """ 更改報名資訊，多筆更改第一筆 """
-    index = tea_fig_list_check(SignUp_List, id)
+    index = tea_fig_list_check(SignUp_List, f'<@!{id}>')
     if(len(index) > 0):
         for k in info:
             SignUp_List[index[0]][k] = info[k]
             data_save()
         return True
     return False
+
+
+def tea_fig_cut_out_list_sort():
+    week = now['周']
+    king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], now['王'])
+    overflow_SignUp_List = All_OutKnife_Data[week][king]['報名列表']
+    cut_out_SignUp_List = All_OutKnife_Data[week]['出刀清單']['報名列表']
+    index = 0
+    for record in overflow_SignUp_List:
+        cut_out_index = tea_fig_list_check(cut_out_SignUp_List, record['id'])
+        if len(cut_out_index) > 0:
+            cut_out_SignUp_List[cut_out_index[0]]['index'] = index
+            index += 1
+    All_OutKnife_Data[week]['出刀清單']['報名列表'] = sorted(
+        cut_out_SignUp_List, key=lambda x: x['index'] if 'index' in x else 999)
 
 
 def event_number_insert(payload):

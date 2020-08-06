@@ -46,6 +46,7 @@ if team_fight_function_enable:
         All_OutKnife_save_data = content_file.read()
     All_OutKnife_Data = ast.literal_eval(All_OutKnife_save_data)
     overflow = All_OutKnife_Data[1]["補償清單"]
+    ReportDamage = All_OutKnife_Data[1]["出刀清單"]
 
     with open('./data/now_data.json', 'r') as content_file:
         now_save_data = content_file.read()
@@ -66,7 +67,7 @@ if team_fight_function_enable:
                                 '4王': {'資訊': {"header": "", "footer": "", "hp": 1200}, '報名列表': []},
                                 '5王': {'資訊': {"header": "", "footer": "", "hp": 1500}, '報名列表': []}}
         overflow = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []}"""
-        ReportDamage = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []}
+        #ReportDamage = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []}
         All_OutKnife_Data[i]['補償清單'] = overflow
         All_OutKnife_Data[i]['出刀清單'] = ReportDamage
 
