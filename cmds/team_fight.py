@@ -520,7 +520,12 @@ class Team_Fight(Cog_Extension):
     @commands.command(name='進場',
                       aliases=['in'])
     async def 進場(self, ctx):
+        channel_id = ctx.channel.id
         author_id = ctx.author.id
+        ''' 權限 '''
+        if(limit_enable):
+            if (channel_id not in [run_out_before_look]):
+                return 0
         week = now['周']
         king_index = now['王']
         king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], king_index)
@@ -534,7 +539,12 @@ class Team_Fight(Cog_Extension):
     @commands.command(name='回報',
                       aliases=['re'])
     async def 回報(self, ctx, *msg):
+        channel_id = ctx.channel.id
         author_id = ctx.author.id
+        ''' 權限 '''
+        if(limit_enable):
+            if (channel_id not in [tea_fig_channel]):
+                return 0
         week = now['周']
         king = 7
         try:
