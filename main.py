@@ -62,7 +62,7 @@ async def on_ready():
             if(now_changed_content):
                 #print (now_changed_content)
                 change_content_list.append(now_changed_content)
-                await run_channel.send(content=now_changed_content)
+                #await run_channel.send(content=now_changed_content)
                 now_save()
             msg_tip.append(await run_channel.send(content=f'周,王 核對完畢'))
         except:
@@ -135,9 +135,12 @@ async def on_ready():
                 for i2 in i.fields:
                     tmp = i2.value.split(' ', 1)
                     dc_id = tmp[0]
-                    dc_damage = tmp[1].replace('W', '').replace('S', '').spilt('|')[0]
-                    tmp_tmp = dc_damage.split(',', 1)
-                    king_kill_index = int(tmp_tmp[1])
+                    all_str = tmp[1].split('-',1)
+                    dc_damage = all_str[0].replace('W', '').replace('S', '')
+                    tmp_tmp = dc_damage.split(',')
+                    king_kill_index = int(tmp_tmp[1]) if len(tmp_tmp) > 1 else 0
+                    cut_out_index = int(tmp_tmp[2]) if len(tmp_tmp) > 2 else 0
+                    remark = all_str[1] if len(all_str) > 1 else False
                     dc_damage = tmp_tmp[0]
 
                     # print(dc_id,dc_damage)
@@ -157,11 +160,13 @@ async def on_ready():
                         except:
                             pass
                         sys_list_tmp.insert(
-                            l, {"id": dc_id, "傷害": dc_damage, "呼叫": king_kill_index})
+                            l, {"id": dc_id, "傷害": dc_damage, "呼叫": king_kill_index, "進場": cut_out_index})
+                        if remark:
+                            sys_list_tmp[l]["備註"] = remark
                     no += 1
             if(list_changed_content):
                 change_content_list.append(list_changed_content)
-                await run_channel.send(content=list_changed_content)
+                #await run_channel.send(content=list_changed_content)
                 # [list] backup data
                 msg_tip.append(await run_channel.send(content=f'資料有更動，備份中'))
                 await backup_channel.send(content=list_changed_content)
@@ -269,5 +274,5 @@ for filename in os.listdir('./cmds'):
         bot.load_extension(f'cmds.{filename[:-3]}')
 
 if __name__ == "__main__":
-    # keep_alive.keep_alive()
+    keep_alive.keep_alive()
     bot.run(setting_data['TOKEN'])

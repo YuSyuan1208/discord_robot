@@ -9,7 +9,7 @@ with open('./data/reply_cmds.json', 'r', encoding='utf8') as jfile:
 """ --------------- Initial Parameter --------------- """
 
 all_function_enable = False  # 未使用
-team_fight_list_compare_enable = False  # 重啟清單比對功能
+team_fight_list_compare_enable = True  # 重啟清單比對功能
 team_fight_function_enable = True  # 戰隊站功能
 limit_enable = False  # 指令權限
 if team_fight_function_enable:

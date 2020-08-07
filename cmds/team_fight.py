@@ -527,7 +527,7 @@ class Team_Fight(Cog_Extension):
         SignUp_List = All_OutKnife_Data[week][king]['報名列表']
         index = tea_fig_list_check(SignUp_List, f'<@!{author_id}>')
         if len(index) > 0:
-            await self.報名(ctx, 7, index[0])
+            await self.報名(ctx, 7)
         else:
             await ctx.send(f'<@!{author_id}>尚未報名{week}周{king}清單')
 
@@ -1357,7 +1357,7 @@ def tea_fig_list_func(msg):
     # embed.set_thumbnail(url=)
     n = 1
     for k2 in SignUp_List:
-        remark = "| " + k2["備註"] if "備註" in k2 else ''
+        remark = "- " + k2["備註"] if "備註" in k2 else ''
         if(msg == "補償清單"):
             embed.add_field(
                 name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit}', inline=False)
