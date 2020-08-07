@@ -647,24 +647,25 @@ class Team_Fight(Cog_Extension):
         king = now['王']
         week = now['周']
 
+
         # 清單人員比對
         user_index = 0
         damage = 0
-
         # try:
         msg_index = [
             msg_index for msg_index in list_msg_tmp if list_msg_tmp_id[king-1] in [msg_index[2].id]][0]
         week_data = msg_index[0]
         king_data = tea_fig_KingIndexToKey(
             All_OutKnife_Data[1], msg_index[1])
-        if(len(All_OutKnife_Data[week_data][king_data]['報名列表']) > 0):
+        
+        if len(tea_fig_list_check(All_OutKnife_Data[week_data][king_data]['報名列表'],f'<@!{author_id}>')) > 0:
             used_list = [tmp['id']
                          for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
             user_index = used_list.index(f'<@!{author_id}>')
             damage = All_OutKnife_Data[week_data][king_data]["報名列表"][user_index]["傷害"]
             await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
             meme_index = (week - now['周']) * list_refresh_king + king - 1
-            SignUp_List_tmp = All_OutKnife_Data[week_data][king_data]["報名列表"]
+            """ SignUp_List_tmp = All_OutKnife_Data[week_data][king_data]["報名列表"]
             index_tmp = 0
             for v in SignUp_List_tmp:
                 if index_tmp < user_index:
@@ -672,7 +673,7 @@ class Team_Fight(Cog_Extension):
                     v['呼叫'] += 1
                     index_tmp += 1
                 else:
-                    break
+                    break """
         else:
             return 0
         # except:
@@ -689,6 +690,11 @@ class Team_Fight(Cog_Extension):
 
         # 跳下一隻王
         king += 1
+        # 清除出刀清單
+        tea_fig_cut_out_list_del()
+        cut_out_list_index = 7
+        meme_index = (week - now['周']) * list_refresh_king + cut_out_list_index - 1
+        await self.meme_edit(ctx, week, cut_out_list_index, meme_index)
         change_week_ea = False
         if(king > 5):
             king = 1
@@ -710,16 +716,33 @@ class Team_Fight(Cog_Extension):
         except:
             over_id = ""
         send_msg += f'\n其餘完整刀準備(´﹀`)'
+
+        """ 呼叫、進場判定 """
+        overflow_SignUp_List = All_OutKnife_Data[week]["補償清單"]["報名列表"]
+        del_list = []
         tmp_index = 1
         for v in SignUp_List:
+            if len(tea_fig_list_check(overflow_SignUp_List,v["id"])) > 0:
+                continue
             if tmp_index > king_enter_call_max:
                 break
             tmp_id = v['id']
-            if v['呼叫'] == 0:
+            """ if v['呼叫'] == 0:
+                tmp_index += 1
+                send_msg += f'\n{tmp_id}' """
+            if(v['進場']+2 < v['呼叫']):
+                del_list.append(v)
+            else:
                 tmp_index += 1
                 send_msg += f'\n{tmp_id}'
-            else:
-                send_msg += f'\n~~{tmp_id}~~'
+            v['呼叫'] += 1
+        del_str = ''        
+        for v in del_list:
+            SignUp_List.remove(v)
+            del_str += '\n~~' + v['id'] +"~~"
+        if del_str != '':
+            send_msg += '\n因（進刀次數）<（被叫到的次數)3次，取消報名' + del_str
+
         await ctx.send(send_msg)
         await self.data輸出(ctx)
         await self.now輸出(ctx)
@@ -990,12 +1013,12 @@ class Team_Fight(Cog_Extension):
 
                 #print(week, king)
                 if(king == '補償清單'):
-                    await channel.send(f'<@!{user_id}>你準備報名{king} (3秒後清除)', delete_after=3)
+                    #await channel.send(f'<@!{user_id}>你準備報名{king} (3秒後清除)', delete_after=3)
                     await self.enter_to_overflow_list_from_emoji(channel, user_id, week, king)
                 elif(king == '出刀清單'):
                     return 0
                 else:
-                    await channel.send(f'<@!{user_id}>你準備報名{force_week}周{king} (3秒後清除)', delete_after=3)
+                    #await channel.send(f'<@!{user_id}>你準備報名{force_week}周{king} (3秒後清除)', delete_after=3)
                     await self.enter_to_king_from_emoji(channel, user_id, week, king)
                 """ except:
                     print('emoji報名失敗') """
@@ -1398,6 +1421,10 @@ def tea_fig_cut_out_list_sort():
     All_OutKnife_Data[week]['出刀清單']['報名列表'] = sorted(
         cut_out_SignUp_List, key=lambda x: x['index'] if 'index' in x else 999)
 
+def tea_fig_cut_out_list_del():
+    week = now['周']
+    cut_out_SignUp_List = All_OutKnife_Data[week]['出刀清單']['報名列表']
+    cut_out_SignUp_List.clear()
 
 def event_number_insert(payload):
     """ 按鍵數字輸入 """

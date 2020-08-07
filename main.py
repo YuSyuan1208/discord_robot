@@ -205,6 +205,7 @@ async def on_ready():
         run_channel = bot.get_channel(run_out_before_look)
         backup_channel = bot.get_channel(backup_channel_id)
         msg_obj_list = []
+        now_msg[0] = await only_meme_speak_channel_obj.fetch_message(now['msg_id'])
         for id in list_msg_tmp_id:
             # print(id) # message id
             if id == 0:
