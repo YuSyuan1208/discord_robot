@@ -517,9 +517,9 @@ class Team_Fight(Cog_Extension):
     """ ----------------- 補償相關指令 -----------------"""
 
     """ ----------------- 出刀相關指令 -----------------"""
-    @commands.command(name='進場',
+    @commands.command(name='進刀',
                       aliases=['in'])
-    async def 進場(self, ctx):
+    async def 進刀(self, ctx):
         channel_id = ctx.channel.id
         author_id = ctx.author.id
         ''' 權限 '''
@@ -528,13 +528,14 @@ class Team_Fight(Cog_Extension):
                 return 0
         week = now['周']
         king_index = now['王']
+        force_week = now['force_week']
         king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], king_index)
         SignUp_List = All_OutKnife_Data[week][king]['報名列表']
         index = tea_fig_list_check(SignUp_List, f'<@!{author_id}>')
         if len(index) > 0:
             await self.報名(ctx, 7)
         else:
-            await ctx.send(f'<@!{author_id}>尚未報名{week}周{king}清單')
+            await ctx.send(f'尚未報名{force_week}周{king}清單')
 
     @commands.command(name='回報',
                       aliases=['re'])
@@ -543,7 +544,7 @@ class Team_Fight(Cog_Extension):
         author_id = ctx.author.id
         ''' 權限 '''
         if(limit_enable):
-            if (channel_id not in [tea_fig_channel]):
+            if (channel_id not in [run_out_before_look]):
                 return 0
         week = now['周']
         king = 7
@@ -556,7 +557,7 @@ class Team_Fight(Cog_Extension):
         meme_index = (week - now['周']) * list_refresh_king + king - 1
         SignUp_List_tmp = All_OutKnife_Data[week]['出刀清單']["報名列表"]
         if tea_fig_enter_info_change(SignUp_List_tmp, author_id, info):
-            await ctx.send(f'<@!{author_id}>回報成功')
+            await ctx.send(f'回報成功')
             await self.meme_edit(ctx, week, king, meme_index)
         else:
             await ctx.send(f'<@!{author_id}>尚未進刀，請輸入*in進場')
@@ -602,7 +603,7 @@ class Team_Fight(Cog_Extension):
         await self.now_edit(ctx)
         await self.meme_edit(ctx, 'all')
 
-    @commands.command(name='看王',
+    """ @commands.command(name='看王',
                       #description="Answers a yes/no question.",
                       brief="Answers from the beyond.",
                       aliases=['search', 's'],
@@ -625,7 +626,7 @@ class Team_Fight(Cog_Extension):
                 await self.清單(ctx, tmp, i)
             # await self.切換周(ctx,week)
             return 0
-        await ctx.send('區間請小於5')
+        await ctx.send('區間請小於5') """
     """ ----------------- 週數 -----------------"""
 
     """ ----------------- 王數 -----------------"""
@@ -776,6 +777,11 @@ class Team_Fight(Cog_Extension):
         king = now['王']
         king = int(msg)
         now['王'] = king
+        week = now['king']
+        tea_fig_cut_out_list_del()
+        cut_out_list_index = 7
+        meme_index = (week - now['周']) * list_refresh_king + cut_out_list_index - 1
+        await self.meme_edit(ctx, week, cut_out_list_index, meme_index)
         await ctx.send(f'切換王成功')
         await self.now輸出(ctx)
         await self.now_edit(ctx)
