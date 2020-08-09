@@ -777,7 +777,7 @@ class Team_Fight(Cog_Extension):
         king = now['王']
         king = int(msg)
         now['王'] = king
-        week = now['king']
+        week = now['周']
         tea_fig_cut_out_list_del()
         cut_out_list_index = 7
         meme_index = (week - now['周']) * list_refresh_king + cut_out_list_index - 1
