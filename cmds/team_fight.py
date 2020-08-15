@@ -114,7 +114,7 @@ class Team_Fight(Cog_Extension):
         ''' 權限 '''
         if (admin_check(author_id) != True):
             if(limit_enable):
-                if (channel_id not in [tea_fig_channel, only_meme_speak_channel]):
+                if (channel_id not in [tea_fig_channel, only_meme_speak_channel, run_out_before_look]):
                     return 0
 
         ''' 周、王判定 '''
@@ -192,7 +192,7 @@ class Team_Fight(Cog_Extension):
                         await self.meme_edit(ctx, week, meme_king, meme_index) """
                 elif(tmp[0] == "出刀清單"):
                     tea_fig_cut_out_list_sort()
-                    await ctx.send(f'<@!{author_id}>{tmp[0]}進場成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}', delete_after=delete_after)
+                    await ctx.send(f'{tmp[0]}進場成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}', delete_after=delete_after)
                 else:
                     send_msg = f'<@!{author_id}>{force_week}周{tmp[0]}報名成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}'
                     await ctx.send(send_msg, delete_after=delete_after)
