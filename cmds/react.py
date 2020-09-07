@@ -29,6 +29,16 @@ import random
 import json
 import array
 from model.func import *
+
+def plus():
+    while True:
+        x = 0
+        while x<3:
+            yield x
+            x += 1
+
+plus_test = plus()
+
 class React(Cog_Extension):
 
     # @commands.command(description="EX. *hello", brief="EX. *hello")
@@ -336,11 +346,57 @@ class React(Cog_Extension):
     # async def 臭甲(self, ctx):
     #     await ctx.send('https://www.twitch.tv/ushikun_6927/clip/SparklyJazzyShinglePlanking')
 
-    @commands.command(description="")
-    async def at(self, ctx, msg):
-        react_cmd = msg
-        
-        await ctx.send('')
+
+    # setting
+    """ ch_id: 750943234691432510 
+    msg_id: 752519979173150771 
+    aut_id: 312939009879834624 """
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        channel_id = 750943234691432510
+        msg_id = 750946905751814224 
+        channel = self.bot.get_channel(channel_id)
+        msg = await channel.fetch_message(msg_id)
+        content = msg.content
+
+        data = react_data
+        tmp = content.split('\n')
+        for i in tmp:
+            print(i)
+            tmp2 = i.split(':')
+            data[tmp2[0]] = tmp2[1]
+        print('react_data 獲取成功')
+
+    @commands.Cog.listener()
+    async def on_message(self, msg):
+        prefix = '**'
+        pre_len = len(prefix)
+        if msg.content[0:pre_len] == prefix:
+            cmd = msg.content.split(' ',1)[0]
+            data = await self.get_react_data()
+            if cmd[pre_len:] in data:
+                await msg.channel.send(data[cmd[pre_len:]])
+
+    async def get_react_data(self):
+        channel_id = 750943234691432510
+        msg_id = 750946905751814224 
+        channel = self.bot.get_channel(channel_id)
+        msg = await channel.fetch_message(msg_id)
+        content = msg.content
+
+        data = {}
+        tmp = content.split('\n')
+        for i in tmp:
+            print(i)
+            tmp2 = i.split(':')
+            data[tmp2[0]] = tmp2[1]
+        return data
+
+    @commands.command()
+    async def at(self, ctx):
+        res = next(plus_test)
+        await ctx.send(res)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -367,15 +423,13 @@ class React(Cog_Extension):
         msg = await channel.fetch_message(msg_id)
         content = msg.content
 
-        emj = {}
+        data = react_data
         tmp = content.split('\n')
-        print(tmp)
         for i in tmp:
             print(i)
             tmp2 = i.split(':')
-            emj[tmp2[0]] = tmp2[1]
-        print(emj)
-        await ctx.send(emj)
-
+            data[tmp2[0]] = tmp2[1]
+        await ctx.send('react_data 獲取成功')
+        
 def setup(bot):
     bot.add_cog(React(bot))

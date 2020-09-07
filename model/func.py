@@ -7,6 +7,9 @@ with open('./data/reply_cmds.json', 'r', encoding='utf8') as jfile:
     reply_data = json.load(jfile)
 
 """ --------------- Initial Parameter --------------- """
+# React
+react_data = {}
+
 
 all_function_enable = False  # 未使用
 team_fight_list_compare_enable = False  # 重啟清單比對功能
