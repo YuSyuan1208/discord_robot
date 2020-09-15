@@ -105,8 +105,7 @@ class React(Cog_Extension):
 
     @commands.command()
     async def at(self, ctx):
-        res = next(plus_test)
-        await ctx.send(res)
+        await ctx.send('hi')
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):

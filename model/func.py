@@ -10,7 +10,6 @@ with open('./data/reply_cmds.json', 'r', encoding='utf8') as jfile:
 # React
 react_data = {}
 
-
 all_function_enable = False  # 未使用
 team_fight_list_compare_enable = False  # 重啟清單比對功能
 team_fight_function_enable = False  # 戰隊站功能
@@ -141,7 +140,6 @@ def admin_save():
     f = open("./data/setting.json", "w")
     f.write(json.dumps(setting_data))
     f.close()
-
 
 """ def team_fight_setting_save():
     f = open("./data/team_fight_setting.json", "w")

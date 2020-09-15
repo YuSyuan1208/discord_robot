@@ -66,3 +66,33 @@ react模組翻新:
 1.指令記錄在dc
     (1)用channel_id和msg_id判斷指令的訊息
     (2)
+2.進場後+1
+
+json file
+Read
+---------------------------------------------------
+import json
+from io import StringIO
+import numpy as np
+
+with open('myfile.json', 'r') as read_file:
+    dict_data = json.load(read_file)
+   
+    # list all keys
+    print('dict_data.keys = ', dict_data.keys())
+
+---------------------------------------------------
+
+
+
+
+Write
+
+---------------------------------------------------
+import json
+
+data = {'key1': value1, 'key2': value2}
+ret = json.dumps(data)
+
+open('out.json', 'w') with fp:
+    fp.write(ret)

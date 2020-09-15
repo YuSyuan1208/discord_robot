@@ -3,9 +3,72 @@ from discord.ext import commands
 from core.classes import Cog_Extension
 from model.func import *
 import array
-
+import os
 
 class Main(Cog_Extension):
+
+    main_str = """\n{
+        channel_id:,
+        msg_id:,\n}"""
+    main_data = {}
+
+    def __init__(self, bot):
+        print('init')
+        print(__file__)
+        super().__init__(bot)
+        with open('./data/mangage.json', 'r', encoding='utf8') as jfile:
+            self.main_data = json.load(jfile)
+        print('get main data')
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        if os.path.isfile('./mangage.json'):
+            with open('./data/mangage.json', 'r', encoding='utf8') as jfile:
+                self.main_data = json.load(jfile)
+
+    @commands.command()
+    async def _check(self, ctx):
+        try:
+            channel_id = self.main_data['channel_id']
+            msg_id = self.main_data['msg_id']
+            channel = self.bot.get_channel(channel_id)
+            if not channel:
+                print('channel not find')
+                return False
+            msg = await channel.fetch_message(msg_id)
+            if not msg:
+                print('msg not find')
+                return False
+            content = msg.content
+            await ctx.send('main has get')
+        except:
+            #if not self.main_data:
+            channel_id = ctx.channel.id
+            msg = await ctx.send(self.main_str)
+            msg_id = msg.id
+            self.main_data['channel_id'] = channel_id
+            self.main_data['msg_id'] = msg_id
+            self.main_save()
+
+    @commands.command()
+    async def _change(self, ctx, msg):
+        pass
+
+    @commands.command()
+    async def main_test(self, ctx):
+        channel = self.bot.get_channel(self.main_data['channel_id'])
+        if not channel:
+            print('channel not find')
+            return False
+        msg = await channel.fetch_message(self.main_data['msg_id'])
+        if not msg:
+            print('msg not find')
+            return False
+
+    def main_save(self):
+        f = open("./data/main.json", "w")
+        f.write(json.dumps(self.main_data))
+        f.close()
 
     @commands.command()
     async def ping(self, ctx):
