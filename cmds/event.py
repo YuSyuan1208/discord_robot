@@ -56,6 +56,9 @@ class Event(Cog_Extension):
             n = 1
             async for message in ctx.channel.history():
                 print(message.created_at, message.id)
+                n += 1
+                if n > number:
+                    break
 
 
 def setup(bot):
