@@ -589,7 +589,7 @@ class Team_Fight(Cog_Extension):
     @commands.command(name='掛樹清單', aliases=['tl'])
     async def 掛樹清單(self, ctx):
         author_id = ctx.author.id
-        if (admin_check(author_id) != True):
+        if (admin_check(author_id,self.bot) != True):
             return False
         SignUp_List = ReportDamage['報名列表']
         content = ''
@@ -1410,12 +1410,13 @@ def tea_fig_list_func(msg):
     n = 1
     for k2 in SignUp_List:
         remark = "- " + k2["備註"] if "備註" in k2 else ''
+        tree = "[掛樹]" if "tree" in k2 else ''
         if(msg == "補償清單"):
             embed.add_field(
                 name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit}', inline=False)
         elif(msg == "出刀清單"):
             embed.add_field(
-                name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit}{remark}', inline=False)
+                name=f'No.{n}{tree}', value=f'{k2["id"]} {k2["傷害"]}{unit}{remark}', inline=False)
         else:
             embed.add_field(
                 name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit},{k2["呼叫"]},{k2["進場"]}', inline=False)
