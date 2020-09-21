@@ -566,6 +566,38 @@ class Team_Fight(Cog_Extension):
             await self.meme_edit(ctx, week, king, meme_index)
         else:
             await ctx.send(f'<@!{author_id}>尚未進刀，請輸入*in進場')
+
+    @commands.command(name='掛樹', aliases=['tree'])
+    async def 掛樹(self, ctx):
+        channel_id = ctx.channel.id
+        author_id = ctx.author.id
+        ''' 權限 '''
+        if(limit_enable):
+            if (channel_id not in [run_out_before_look]):
+                return 0
+        week = now['周']
+        king = 7
+        info = {'tree': 1}
+        meme_index = (week - now['周']) * list_refresh_king + king - 1
+        SignUp_List_tmp = All_OutKnife_Data[week]['出刀清單']["報名列表"]
+        if tea_fig_enter_info_change(SignUp_List_tmp, author_id, info):
+            await ctx.send(f'掛樹成功')
+            await self.meme_edit(ctx, week, king, meme_index)
+        else:
+            await ctx.send(f'<@!{author_id}>尚未進刀，請輸入*in進場')
+
+    @commands.command(name='掛樹清單', aliases=['tl'])
+    async def 掛樹清單(self, ctx):
+        author_id = ctx.author.id
+        if (admin_check(author_id) != True):
+            return False
+        SignUp_List = ReportDamage['報名列表']
+        content = ''
+        for i in SignUp_List:
+            if 'tree' in i:
+                content += f' {i["id"]}'
+        if content:
+            await ctx.send(f'{content}下來啦，是要在樹上多久!')
     """ ----------------- 出刀相關指令 -----------------"""
 
     """ ----------------- 週數 -----------------"""
