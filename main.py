@@ -142,6 +142,7 @@ async def on_ready():
                     cut_out_index = int(tmp_tmp[2]) if len(tmp_tmp) > 2 else 0
                     remark = all_str[1] if len(all_str) > 1 else False
                     dc_damage = tmp_tmp[0]
+                    tree = 1 if '[掛樹]' in i2.name else False
 
                     # print(dc_id,dc_damage)
                     if(no < sys_list_len):
@@ -163,6 +164,8 @@ async def on_ready():
                             l, {"id": dc_id, "傷害": dc_damage, "呼叫": king_kill_index, "進場": cut_out_index})
                         if remark:
                             sys_list_tmp[l]["備註"] = remark
+                        if tree:
+                            sys_list_tmp[l]["tree"] = 1
                     no += 1
             if(list_changed_content):
                 change_content_list.append(list_changed_content)

@@ -1410,7 +1410,7 @@ def tea_fig_list_func(msg):
     n = 1
     for k2 in SignUp_List:
         remark = "- " + k2["備註"] if "備註" in k2 else ''
-        tree = "[掛樹]" if "tree" in k2 else ''
+        tree = " [掛樹]" if "tree" in k2 else ''
         if(msg == "補償清單"):
             embed.add_field(
                 name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit}', inline=False)
