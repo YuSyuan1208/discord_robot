@@ -62,7 +62,7 @@ async def on_ready():
             if(now_changed_content):
                 #print (now_changed_content)
                 change_content_list.append(now_changed_content)
-                #await run_channel.send(content=now_changed_content)
+                # await run_channel.send(content=now_changed_content)
                 now_save()
             msg_tip.append(await run_channel.send(content=f'周,王 核對完畢'))
         except:
@@ -135,7 +135,7 @@ async def on_ready():
                 for i2 in i.fields:
                     tmp = i2.value.split(' ', 1)
                     dc_id = tmp[0]
-                    all_str = tmp[1].split('-',1)
+                    all_str = tmp[1].split('-', 1)
                     dc_damage = all_str[0].replace('W', '').replace('S', '')
                     tmp_tmp = dc_damage.split(',')
                     king_kill_index = int(tmp_tmp[1]) if len(tmp_tmp) > 1 else 0
@@ -166,7 +166,7 @@ async def on_ready():
                     no += 1
             if(list_changed_content):
                 change_content_list.append(list_changed_content)
-                #await run_channel.send(content=list_changed_content)
+                # await run_channel.send(content=list_changed_content)
                 # [list] backup data
                 msg_tip.append(await run_channel.send(content=f'資料有更動，備份中'))
                 await backup_channel.send(content=list_changed_content)
@@ -243,7 +243,7 @@ async def on_resumed():
 @bot.command()
 async def load(ctx, extension):
     author_id = ctx.author.id
-    if(admin_check(author_id) == True):
+    if(admin_check(author_id, ctx.bot) == True):
         bot.load_extension(f'cmds.{extension}')
         await ctx.send(f'Loaded {extension}')
 
@@ -251,7 +251,7 @@ async def load(ctx, extension):
 @bot.command()
 async def unload(ctx, extension):
     author_id = ctx.author.id
-    if(admin_check(author_id) == True):
+    if(admin_check(author_id, ctx.bot) == True):
         bot.unload_extension(f'cmds.{extension}')
         await ctx.send(f'Unloaded {extension}')
 
@@ -259,7 +259,7 @@ async def unload(ctx, extension):
 @bot.command()
 async def reload(ctx, extension):
     author_id = ctx.author.id
-    if(admin_check(author_id) == True):
+    if(admin_check(author_id, ctx.bot) == True):
         bot.reload_extension(f'cmds.{extension}')
         await ctx.send(f'Reloaded {extension}')
 
