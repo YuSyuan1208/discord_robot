@@ -29,17 +29,9 @@ import random
 import json
 import array
 from model.func import *
-
-""" def plus():
-    while True:
-        x = 0
-        while x<3:
-            yield x
-            x += 1
-
-plus_test = plus() """
-
-setting_test = {}
+import logging
+import os
+import ast
 
 class React(Cog_Extension):
 
@@ -60,6 +52,46 @@ class React(Cog_Extension):
     """ @commands.command()
     async def start(self, ctx):
         await ctx. """
+    
+    _name = 'react'
+    _file_data = {}
+    _data = {}
+    
+    def __init__(self, bot):
+        super().__init__(bot)
+        if self._name:
+            logging.debug(self._name + ' init')
+            self.file_get()
+        else:
+            logging.error('_name not setting.')
+
+    def file_get(self):
+        if os.path.isfile('./data/'+self._name+'.json'):
+            with open('./data/'+self._name+'.json', 'r', encoding='utf8') as jfile:
+                self._file_data = json.load(jfile)
+            logging.debug(self._name + ' file getting.')
+            return True
+        else:
+            logging.warning(self._name + ' file not find.')
+            return False
+
+    def file_save(self):
+        f = open('./data/'+self._name+'.json', 'w')
+        f.write(json.dumps(self._file_data))
+        f.close()
+
+    @commands.command()
+    async def _check(self, ctx):
+        if self._file_data:
+            logging.debug(self._name + ' file already get.')
+        else:
+            channel_id = ctx.channel.id
+            msg = await ctx.send(self._data)
+            msg_id = msg.id
+            self._file_data.update({'channel_id':channel_id,'msg_id':msg_id})
+            self.file_save()
+            logging.debug(self._name + ' file created.')
+
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -77,35 +109,62 @@ class React(Cog_Extension):
             tmp2 = i.split(':')
             data[tmp2[0]] = tmp2[1]
         print('react_data 獲取成功') """
-
-    @commands.Cog.listener()
-    async def on_message(self, msg):
-        prefix = '**'
-        pre_len = len(prefix)
-        if msg.content[0:pre_len] == prefix:
-            cmd = msg.content.split(' ',1)[0]
-            data = await self.get_react_data()
-            if cmd[pre_len:] in data:
-                await msg.channel.send(data[cmd[pre_len:]])
+        if await self.get_react_data():
+            self.add_command()
 
     async def get_react_data(self):
-        channel_id = 750943234691432510
-        msg_id = 750946905751814224 
-        channel = self.bot.get_channel(channel_id)
-        msg = await channel.fetch_message(msg_id)
-        content = msg.content
+        if self._file_data:
+            channel_id = self._file_data['channel_id'] #750943234691432510
+            msg_id = self._file_data['msg_id'] #750946905751814224 
+            channel = self.bot.get_channel(channel_id)
+            if not channel:
+                logging.warning(self._name + f' channel not find.({channel_id})')
+            msg = await channel.fetch_message(msg_id)
+            if not msg:
+                logging.warning(self._name + f' message not find.({msg_id})')
+            content = msg.content
 
-        data = {}
-        tmp = content.split('\n')
-        for i in tmp:
-            print(i)
-            tmp2 = i.split(':')
-            data[tmp2[0]] = tmp2[1]
-        return data
+            self._data = ast.literal_eval(content)
+            logging.debug(self._name + ' message getting.')
+            return True
+        else:
+            logging.warning(self._name + ' no data.')
+            return False
+    
+    def add_command(self):
+        if self._data:
+            for name in self._data:
+                obj = cms_class()
+                obj.msg = self._data[name]
+                self.bot.add_command(commands.Command(obj.add_cmd,name=name))
+            logging.debug(self._name + ' cmds complete.')
+            return True
+        else:
+            logging.warning(self._name + ' cmds no data.')
+            return False
 
     @commands.command()
-    async def at(self, ctx):
-        await ctx.send('hi')
+    async def at(self, ctx, *msg):
+        content = ' '.join(msg[0:])
+        print(content)
+        self._data.update(ast.literal_eval(content))
+        self.add_command()
+        await self.msg_change()
+
+    @commands.command()
+    async def msg_change(self):
+        if self._file_data:
+            channel_id = self._file_data['channel_id'] #750943234691432510
+            msg_id = self._file_data['msg_id'] #750946905751814224 
+            channel = self.bot.get_channel(channel_id)
+            if not channel:
+                logging.warning(self._name + f' channel not find.({channel_id})')
+            msg = await channel.fetch_message(msg_id)
+            if not msg:
+                logging.warning(self._name + f' message not find.({msg_id})')
+            await msg.edit(content = self._data)
+        
+
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -126,22 +185,15 @@ class React(Cog_Extension):
 
     @commands.command(description="")
     async def test(self, ctx):
-        #print(self.get_guild(734391146910056478))
-        """ for server in self.bot.guilds:
-            print(server.id)
-            print(server.name)
-        server = self.bot.get_guild(727170387091259393)
-        role = server.get_role(734391146910056478)
-        print(role.members)
-        await ctx.send(role.id) """
-        obj = test_class()
-        obj.msg = 'test'
-        self.bot.add_command(commands.Command(obj.aaa,name='bbb'))
+        pass
 
-class test_class:
-    msg = 'none'
-    async def aaa(self,ctx):
-        await ctx.send(self.msg)
+
+class cms_class:
+    msg = []
+    author_id = 0
+    channel_id = 0
+    async def add_cmd(self,ctx):
+        await ctx.send(random.choice(self.msg).format(ctx=ctx))
 
 # @commands.command()
 # async def aaa(self,ctx):
