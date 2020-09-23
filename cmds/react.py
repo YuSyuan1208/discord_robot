@@ -134,8 +134,11 @@ class React(Cog_Extension):
     def add_command(self):
         if self._data:
             for name in self._data:
+                print('add_com:',self._data[name],name)
                 obj = cms_class()
-                obj.msg = self._data[name]
+                obj.msg.append(self._data[name])
+                print(obj.msg)
+                
                 self.bot.add_command(commands.Command(obj.add_cmd,name=name))
             logging.debug(self._name + ' cmds complete.')
             return True
@@ -147,7 +150,10 @@ class React(Cog_Extension):
     async def at(self, ctx, *msg):
         content = ' '.join(msg[0:])
         print(content)
-        self._data.update(ast.literal_eval(content))
+        ast_content = ast.literal_eval(content)
+        print(ast_content)
+        self._data.update(ast_content)
+        print(self._data)
         self.add_command()
         await self.msg_change()
 
@@ -185,6 +191,12 @@ class React(Cog_Extension):
 
     @commands.command(description="")
     async def test(self, ctx):
+        c = self.bot.get_command('abc')
+        test = c.callback
+        print(test)
+        """  obj = cms_class()
+        obj.msg.append('test')
+        c.update(callback=obj.add_cmd) """
         pass
 
 
