@@ -65,6 +65,13 @@ class React(Cog_Extension):
         else:
             logging.error('_name not setting.')
 
+    @commands.command()
+    async def react(self, ctx): # This was inside '__init__' before
+        print('react')
+        logging.debug(self._name + ' react.')
+        if await self.get_react_data():
+            self.add_command()
+
     def file_get(self):
         if os.path.isfile('./data/'+self._name+'.json'):
             with open('./data/'+self._name+'.json', 'r', encoding='utf8') as jfile:
@@ -95,7 +102,7 @@ class React(Cog_Extension):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        pass
+        logging.debug(self._name + ' on_ready.')
         """ channel_id = 750943234691432510
         msg_id = 750946905751814224 
         channel = self.bot.get_channel(channel_id)
@@ -109,6 +116,7 @@ class React(Cog_Extension):
             tmp2 = i.split(':')
             data[tmp2[0]] = tmp2[1]
         print('react_data 獲取成功') """
+        
         if await self.get_react_data():
             self.add_command()
 
@@ -131,15 +139,21 @@ class React(Cog_Extension):
             logging.warning(self._name + ' no data.')
             return False
     
-    def add_command(self):
+    def add_command(self, names=[]):
         if self._data:
-            for name in self._data:
-                print('add_com:',self._data[name],name)
-                obj = cms_class()
-                obj.msg.append(self._data[name])
-                print(obj.msg)
-                
-                self.bot.add_command(commands.Command(obj.add_cmd,name=name))
+            if not names:
+                names = self._data
+            for name in names:
+                cmd_obj = self.bot.get_command(name)
+                if cmd_obj:
+                    print('ins_com:',self._data[name],name)
+                    cmd_obj.callback.__self__.msg = self._data[name]
+                else:
+                    print('add_com:',self._data[name],name)
+                    obj = cms_class()
+                    obj.msg = self._data[name]
+                    print(obj.msg)
+                    self.bot.add_command(commands.Command(obj.add_cmd,name=name))
             logging.debug(self._name + ' cmds complete.')
             return True
         else:
@@ -152,7 +166,11 @@ class React(Cog_Extension):
         print(content)
         ast_content = ast.literal_eval(content)
         print(ast_content)
-        self._data.update(ast_content)
+        for key,value in ast_content.items():
+            if key in self._data:
+                self._data[key]+= value
+            else:
+                self._data.update({key:value})
         print(self._data)
         self.add_command()
         await self.msg_change()
@@ -189,23 +207,26 @@ class React(Cog_Extension):
         else:
             print(payload.emoji.name,msg.content)
 
-    @commands.command(description="")
+    #@commands.command(description="")
     async def test(self, ctx):
-        c = self.bot.get_command('abc')
-        test = c.callback
-        print(test)
+        c = self.bot.get_command('asd')
+        print(c)
         """  obj = cms_class()
         obj.msg.append('test')
         c.update(callback=obj.add_cmd) """
         pass
-
+    @commands.command()
+    @commands.after_invoke(test)
+    async def af_in(self,ctx):
+        print('af_in')
 
 class cms_class:
     msg = []
     author_id = 0
     channel_id = 0
-    async def add_cmd(self,ctx):
-        await ctx.send(random.choice(self.msg).format(ctx=ctx))
+    async def add_cmd(self,ctx,*argv):
+        print(self.msg)
+        await ctx.send(random.choice(self.msg).format(ctx=ctx,input=argv))
 
 # @commands.command()
 # async def aaa(self,ctx):
@@ -213,9 +234,8 @@ class cms_class:
 
 def setup(bot):
     obj = React(bot)
-    #obj.add_command(commands.Command("aaa", aaa))
     bot.add_cog(obj)
-    #bot.add_command(aaa)
+    logging.debug(obj._name + 'being loaded!')
 
 # @commands.command(description="EX. *hello", brief="EX. *hello")
 # async def hello(self, ctx):
