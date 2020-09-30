@@ -19,6 +19,7 @@ async def on_ready():
     print(bot.user.id)
     print('------')
 
+
 @bot.event
 async def on_resumed():
     print('embed_color_list')
@@ -58,5 +59,5 @@ for filename in os.listdir('./cmds'):
         bot.load_extension(f'cmds.{filename[:-3]}')
 
 if __name__ == "__main__":
-    #keep_alive.keep_alive()
+    # keep_alive.keep_alive()
     bot.run(setting_data['TOKEN'])
