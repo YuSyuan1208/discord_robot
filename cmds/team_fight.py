@@ -587,9 +587,9 @@ class Team_Fight(Cog_Extension):
             await ctx.send(f'<@!{author_id}>尚未進刀，請輸入*in進場')
 
     @commands.command(name='掛樹清單', aliases=['tl'])
-    async def 掛樹清單(self, ctx):
+    async def 掛樹清單(self, ctx,flag=True):
         author_id = ctx.author.id
-        if (admin_check(author_id,self.bot) != True):
+        if (admin_check(author_id,self.bot) != True) and flag:
             return False
         SignUp_List = ReportDamage['報名列表']
         content = ''
@@ -729,7 +729,7 @@ class Team_Fight(Cog_Extension):
 
         # 傷害計算
         now_king_left_hp = All_OutKnife_Data[week_data][king_data]["資訊"]["hp"]
-        now_king_left_hp -= damage
+        now_king_left_hp -= int(damage)
         All_OutKnife_Data[week_data][king_data]["資訊"]["hp"] = now_king_left_hp
         await self.meme_edit(ctx, week, king, meme_index)
         if now_king_left_hp > 0:
@@ -738,6 +738,8 @@ class Team_Fight(Cog_Extension):
         # 跳下一隻王
         king += 1
         # 清除出刀清單
+        print('清除出刀清單')
+        await self.掛樹清單(ctx,flag=False)
         tea_fig_cut_out_list_del()
         cut_out_list_index = 7
         meme_index = (week - now['周']) * list_refresh_king + cut_out_list_index - 1
