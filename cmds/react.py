@@ -29,9 +29,10 @@ import random
 import json
 import array
 from model.func import *
-import logging
 import os
 import ast
+import logging
+
 class React(Cog_Extension):
 
     # setting
@@ -73,9 +74,9 @@ class React(Cog_Extension):
 
     def file_get(self):
         if os.path.isfile('./data/'+self._name+'.json'):
+            logging.debug(self._name + ' file getting.')
             with open('./data/'+self._name+'.json', 'r', encoding='utf8') as jfile:
                 self._file_data = json.load(jfile)
-            logging.debug(self._name + ' file getting.')
             return True
         else:
             logging.warning(self._name + ' file not find.')
@@ -88,33 +89,21 @@ class React(Cog_Extension):
 
     @commands.command()
     async def _check(self, ctx):
-        if self._file_data:
+        if self._file_data and self._data:
             logging.debug(self._name + ' file already get.')
+            return True
         else:
-            channel_id = ctx.channel.id
-            msg = await ctx.send(self._data)
-            msg_id = msg.id
-            self._file_data.update({'channel_id': channel_id, 'msg_id': msg_id})
-            self.file_save()
-            logging.debug(self._name + ' file created.')
+            logging.warning(self._name + ' file not getting!')
+        channel_id = ctx.channel.id
+        msg = await ctx.send(self._data)
+        msg_id = msg.id
+        self._file_data.update({'channel_id': channel_id, 'msg_id': msg_id})
+        self.file_save()
+        logging.debug(self._name + ' file created.')
 
     @commands.Cog.listener()
     async def on_ready(self):
         logging.debug(self._name + ' on_ready.')
-        """ channel_id = 750943234691432510
-        msg_id = 750946905751814224
-        channel = self.bot.get_channel(channel_id)
-        msg = await channel.fetch_message(msg_id)
-        content = msg.content
-
-        data = react_data
-        tmp = content.split('\n')
-        for i in tmp:
-            print(i)
-            tmp2 = i.split(':')
-            data[tmp2[0]] = tmp2[1]
-        print('react_data 獲取成功') """
-
         if await self.get_react_data():
             self.add_command()
 

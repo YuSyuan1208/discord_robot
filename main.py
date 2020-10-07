@@ -8,6 +8,15 @@ from model.func import *
 #import keep_alive
 import re
 
+import logging
+from logging.config import fileConfig
+
+# 读取日志配置文件内容
+fileConfig('.\\data\\logging_config.ini')
+
+# 创建一个日志器logger
+logger = logging.getLogger()
+
 bot = commands.Bot(
     command_prefix=setting_data['BOT_PREFIX'], case_insensitive=True)
 

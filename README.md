@@ -80,14 +80,10 @@ with open('myfile.json', 'r') as read_file:
    
     # list all keys
     print('dict_data.keys = ', dict_data.keys())
-
 ---------------------------------------------------
 
 
-
-
 Write
-
 ---------------------------------------------------
 import json
 
@@ -96,3 +92,13 @@ ret = json.dumps(data)
 
 open('out.json', 'w') with fp:
     fp.write(ret)
+---------------------------------------------------
+
+
+Logging
+---------------------------------------------------
+https://docs.python.org/zh-tw/3/library/logging.config.html#logging-config-fileformat
+
+配置說明
+https://www.cnblogs.com/yyds/p/6885182.html
+---------------------------------------------------
