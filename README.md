@@ -101,4 +101,8 @@ https://docs.python.org/zh-tw/3/library/logging.config.html#logging-config-filef
 
 配置說明
 https://www.cnblogs.com/yyds/p/6885182.html
+
+logging輸出方式
+https://www.itread01.com/content/1544664781.html
+
 ---------------------------------------------------

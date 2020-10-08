@@ -33,6 +33,9 @@ import os
 import ast
 import logging
 
+# 创建一个日志器logger
+logger_react = logging.getLogger('react')
+
 class React(Cog_Extension):
 
     # setting
@@ -60,26 +63,26 @@ class React(Cog_Extension):
     def __init__(self, bot):
         super().__init__(bot)
         if self._name:
-            logging.debug(self._name + ' init')
+            logger_react.debug(self._name + ' init')
             self.file_get()
         else:
-            logging.error('_name not setting.')
+            logger_react.error('_name not setting.')
 
     @commands.command()
     async def react(self, ctx):  # This was inside '__init__' before
         print('react')
-        logging.debug(self._name + ' react.')
+        logger_react.debug(self._name + ' react.')
         if await self.get_react_data():
             self.add_command()
 
     def file_get(self):
         if os.path.isfile('./data/'+self._name+'.json'):
-            logging.debug(self._name + ' file getting.')
+            logger_react.debug(self._name + ' file getting.')
             with open('./data/'+self._name+'.json', 'r', encoding='utf8') as jfile:
                 self._file_data = json.load(jfile)
             return True
         else:
-            logging.warning(self._name + ' file not find.')
+            logger_react.warning(self._name + ' file not find.')
             return False
 
     def file_save(self):
@@ -90,20 +93,20 @@ class React(Cog_Extension):
     @commands.command()
     async def _check(self, ctx):
         if self._file_data and self._data:
-            logging.debug(self._name + ' file already get.')
+            logger_react.debug(self._name + ' file already get.')
             return True
         else:
-            logging.warning(self._name + ' file not getting!')
+            logger_react.warning(self._name + ' file not getting!')
         channel_id = ctx.channel.id
         msg = await ctx.send(self._data)
         msg_id = msg.id
         self._file_data.update({'channel_id': channel_id, 'msg_id': msg_id})
         self.file_save()
-        logging.debug(self._name + ' file created.')
+        logger_react.debug(self._name + ' file created.')
 
     @commands.Cog.listener()
     async def on_ready(self):
-        logging.debug(self._name + ' on_ready.')
+        logger_react.debug(self._name + ' on_ready.')
         if await self.get_react_data():
             self.add_command()
 
@@ -113,19 +116,19 @@ class React(Cog_Extension):
             msg_id = self._file_data['msg_id']  # 750946905751814224
             channel = self.bot.get_channel(channel_id)
             if not channel:
-                logging.warning(self._name + f' channel not find.({channel_id})')
+                logger_react.warning(self._name + f' channel not find.({channel_id})')
                 return False
             msg = await channel.fetch_message(msg_id)
             if not msg:
-                logging.warning(self._name + f' message not find.({msg_id})')
+                logger_react.warning(self._name + f' message not find.({msg_id})')
                 return False
             content = msg.content
 
             self._data = ast.literal_eval(content)
-            logging.debug(self._name + ' message getting.')
+            logger_react.debug(self._name + ' message getting.')
             return True
         else:
-            logging.warning(self._name + ' no data.')
+            logger_react.warning(self._name + ' no data.')
             return False
 
     def add_command(self, names=[]):
@@ -143,10 +146,10 @@ class React(Cog_Extension):
                     obj.msg = self._data[name]
                     print(obj.msg)
                     self.bot.add_command(commands.Command(obj.add_cmd, name=name))
-            logging.debug(self._name + ' cmds complete.')
+            logger_react.debug(self._name + ' cmds complete.')
             return True
         else:
-            logging.warning(self._name + ' cmds no data.')
+            logger_react.warning(self._name + ' cmds no data.')
             return False
 
     @commands.command()
@@ -171,11 +174,11 @@ class React(Cog_Extension):
             msg_id = self._file_data['msg_id']  # 750946905751814224
             channel = self.bot.get_channel(channel_id)
             if not channel:
-                logging.warning(self._name + f' channel not find.({channel_id})')
+                logger_react.warning(self._name + f' channel not find.({channel_id})')
                 return False
             msg = await channel.fetch_message(msg_id)
             if not msg:
-                logging.warning(self._name + f' message not find.({msg_id})')
+                logger_react.warning(self._name + f' message not find.({msg_id})')
                 return False
             await msg.edit(content=self._data)
 

@@ -7,15 +7,19 @@ import os
 from model.func import *
 #import keep_alive
 import re
-
 import logging
 from logging.config import fileConfig
-
 # 读取日志配置文件内容
-fileConfig('.\\data\\logging_config.ini')
+logging.config.fileConfig('.\\data\\logging_config.ini')
 
-# 创建一个日志器logger
-logger = logging.getLogger()
+
+logger_discord = logging.getLogger('discord')
+
+
+# logger_root = logging.getLogger(name = 'root')
+# discord.client 
+# logger = logging.getLogger('simple_logger')
+# logger.setLevel(logging.DEBUG)
 
 bot = commands.Bot(
     command_prefix=setting_data['BOT_PREFIX'], case_insensitive=True)
@@ -27,6 +31,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+    # logger_root.debug('main test.')
 
 
 @bot.event
