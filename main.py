@@ -15,9 +15,11 @@ logging.config.fileConfig('.\\data\\logging_config.ini')
 
 logger_discord = logging.getLogger('discord')
 
+logger = logging.getLogger(__name__)
+
 
 # logger_root = logging.getLogger(name = 'root')
-# discord.client 
+# discord.client
 # logger = logging.getLogger('simple_logger')
 # logger.setLevel(logging.DEBUG)
 
@@ -43,24 +45,33 @@ async def on_resumed():
 async def load(ctx, extension):
     author_id = ctx.author.id
     if(admin_check(author_id) == True):
-        bot.load_extension(f'cmds.{extension}')
-        await ctx.send(f'Loaded {extension}')
+        if os.path.isfile(f'.\\cmds\\{extension}'):
+            bot.load_extension(f'cmds.{extension}.py')
+            await ctx.send(f'Loaded {extension}')
+        else:
+            logger.warning(f'Extension cmds.{extension} could not be loaded.')
 
 
 @bot.command()
 async def unload(ctx, extension):
     author_id = ctx.author.id
     if(admin_check(author_id) == True):
-        bot.unload_extension(f'cmds.{extension}')
-        await ctx.send(f'Unloaded {extension}')
+        if os.path.isfile(f'.\\cmds\\{extension}.py'):
+            bot.unload_extension(f'cmds.{extension}')
+            await ctx.send(f'Unloaded {extension}')
+        else:
+            logger.warning(f'Extension cmds.{extension} has not been loaded')
 
 
 @bot.command()
 async def reload(ctx, extension):
     author_id = ctx.author.id
     if(admin_check(author_id) == True):
-        bot.reload_extension(f'cmds.{extension}')
-        await ctx.send(f'Reloaded {extension}')
+        if os.path.isfile(f'.\\cmds\\{extension}.py'):
+            bot.reload_extension(f'cmds.{extension}')
+            await ctx.send(f'Reloaded {extension}')
+        else:
+            logger.warning(f'Extension cmds.{extension} has not been loaded')
 
 # help ending note
 """ bot.help_command.get_ending_note """

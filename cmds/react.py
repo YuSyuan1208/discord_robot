@@ -20,6 +20,7 @@ test
             await ctx.send(" ```arm\ncommand_error\n``` ex. \*王列表 all ,\*王列表 ?王") """
 
 
+# 创建一个日志器logger
 
 
 import discord
@@ -32,9 +33,8 @@ from model.func import *
 import os
 import ast
 import logging
+logger = logging.getLogger(__name__)
 
-# 创建一个日志器logger
-logger_react = logging.getLogger('react')
 
 class React(Cog_Extension):
 
@@ -63,50 +63,44 @@ class React(Cog_Extension):
     def __init__(self, bot):
         super().__init__(bot)
         if self._name:
-            logger_react.debug(self._name + ' init')
-            self.file_get()
+            logger.info(self._name + ' init')
+            self.file('r')
         else:
-            logger_react.error('_name not setting.')
+            logger.error('_name not setting.')
 
-    @commands.command()
-    async def react(self, ctx):  # This was inside '__init__' before
-        print('react')
-        logger_react.debug(self._name + ' react.')
-        if await self.get_react_data():
-            self.add_command()
-
-    def file_get(self):
-        if os.path.isfile('./data/'+self._name+'.json'):
-            logger_react.debug(self._name + ' file getting.')
-            with open('./data/'+self._name+'.json', 'r', encoding='utf8') as jfile:
-                self._file_data = json.load(jfile)
-            return True
-        else:
-            logger_react.warning(self._name + ' file not find.')
-            return False
-
-    def file_save(self):
-        f = open('./data/'+self._name+'.json', 'w')
-        f.write(json.dumps(self._file_data))
-        f.close()
+    def file(self, type):
+        if type == 'r':
+            if os.path.isfile('./data/'+self._name+'.json'):
+                logger.info(self._name + ' file getting.')
+                with open('./data/'+self._name+'.json', 'r', encoding='utf8') as jfile:
+                    self._file_data = json.load(jfile)
+                return True
+            else:
+                logger.warning(self._name + ' file not find.')
+                return False
+        elif type == 'w':
+            logger.info(self._name + ' file saving.')
+            f = open('./data/'+self._name+'.json', 'w')
+            f.write(json.dumps(self._file_data))
+            f.close()
 
     @commands.command()
     async def _check(self, ctx):
         if self._file_data and self._data:
-            logger_react.debug(self._name + ' file already get.')
+            logger.info(self._name + ' file already get.')
             return True
         else:
-            logger_react.warning(self._name + ' file not getting!')
+            logger.warning(self._name + ' file not getting!')
         channel_id = ctx.channel.id
-        msg = await ctx.send(self._data)
+        msg = await ctx.send(json.dumps(self._data, indent=4))
         msg_id = msg.id
         self._file_data.update({'channel_id': channel_id, 'msg_id': msg_id})
-        self.file_save()
-        logger_react.debug(self._name + ' file created.')
+        self.file('w')
+        logger.info(self._name + ' file created.')
 
     @commands.Cog.listener()
     async def on_ready(self):
-        logger_react.debug(self._name + ' on_ready.')
+        logger.info(self._name + ' on_ready.')
         if await self.get_react_data():
             self.add_command()
 
@@ -116,71 +110,68 @@ class React(Cog_Extension):
             msg_id = self._file_data['msg_id']  # 750946905751814224
             channel = self.bot.get_channel(channel_id)
             if not channel:
-                logger_react.warning(self._name + f' channel not find.({channel_id})')
+                logger.warning(self._name + f' channel not find.(channel_id={channel_id})')
                 return False
             msg = await channel.fetch_message(msg_id)
             if not msg:
-                logger_react.warning(self._name + f' message not find.({msg_id})')
+                logger.warning(self._name + f' message not find.(msg_id={msg_id})')
                 return False
             content = msg.content
 
             self._data = ast.literal_eval(content)
-            logger_react.debug(self._name + ' message getting.')
+            logger.info(self._name + ' message getting.')
             return True
         else:
-            logger_react.warning(self._name + ' no data.')
+            logger.warning(self._name + ' no data.')
             return False
 
     def add_command(self, names=[]):
-        if self._data:
+        data = self._data
+        if data:
             if not names:
-                names = self._data
+                names = data
             for name in names:
                 cmd_obj = self.bot.get_command(name)
                 if cmd_obj:
-                    print('ins_com:', self._data[name], name)
-                    cmd_obj.callback.__self__.msg = self._data[name]
+                    logger.debug(self._name + f'ins_com:, {data[name]}, {name}')
+                    cmd_obj.callback.__self__.msg = data[name]
                 else:
-                    print('add_com:', self._data[name], name)
+                    logger.debug(self._name + f'add_com:, {data[name]}, {name}')
                     obj = cms_class()
-                    obj.msg = self._data[name]
-                    print(obj.msg)
+                    obj.msg = data[name]
                     self.bot.add_command(commands.Command(obj.add_cmd, name=name))
-            logger_react.debug(self._name + ' cmds complete.')
+            logger.info(self._name + ' cmds complete.')
             return True
         else:
-            logger_react.warning(self._name + ' cmds no data.')
+            logger.warning(self._name + ' cmds no data.')
             return False
 
     @commands.command()
     async def at(self, ctx, *msg):
         content = ' '.join(msg[0:])
-        print(content)
         ast_content = ast.literal_eval(content)
-        print(ast_content)
+        logger.debug()
         for key, value in ast_content.items():
             if key in self._data:
                 self._data[key] += value
             else:
                 self._data.update({key: value})
-        print(self._data)
         self.add_command()
         await self.msg_change()
 
-    @commands.command()
     async def msg_change(self):
         if self._file_data:
             channel_id = self._file_data['channel_id']  # 750943234691432510
             msg_id = self._file_data['msg_id']  # 750946905751814224
             channel = self.bot.get_channel(channel_id)
             if not channel:
-                logger_react.warning(self._name + f' channel not find.({channel_id})')
+                logger.warning(self._name + f' channel not find.({channel_id})')
                 return False
             msg = await channel.fetch_message(msg_id)
             if not msg:
-                logger_react.warning(self._name + f' message not find.({msg_id})')
+                logger.warning(self._name + f' message not find.({msg_id})')
                 return False
-            await msg.edit(content=self._data)
+            await msg.edit(content=json.dumps(self._data, indent=4))
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -199,15 +190,6 @@ class React(Cog_Extension):
         else:
             print(payload.emoji.name, msg.content)
 
-    # @commands.command(description="")
-    async def test(self, ctx):
-        c = self.bot.get_command('asd')
-        print(c)
-        """  obj = cms_class()
-        obj.msg.append('test')
-        c.update(callback=obj.add_cmd) """
-        pass
-
 
 class cms_class:
     msg = []
@@ -215,7 +197,6 @@ class cms_class:
     channel_id = 0
 
     async def add_cmd(self, ctx, *argv):
-        print(self.msg)
         await ctx.send(random.choice(self.msg).format(ctx=ctx, input=argv))
 
 # @commands.command()
