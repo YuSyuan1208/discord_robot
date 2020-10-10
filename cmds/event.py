@@ -4,9 +4,13 @@ import json
 from core.classes import Cog_Extension
 from model.func import *
 import sys
+import logging
+logger = logging.getLogger(__name__)
 
 
 class Event(Cog_Extension):
+
+    _name = 'event'
 
     """ @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -24,7 +28,11 @@ class Event(Cog_Extension):
         author_id = msg.author.id
         content = msg.content
         msg_id = msg.id
-        # print('ch_id:',channel_id,'msg_id:',msg_id,'aut_id:',author_id,'con:',content)
+        attachments = msg.attachments
+        # print('ch_id:', channel_id, 'msg_id:', msg_id, 'aut_id:',
+        #       author_id, 'con:', content, 'attach:', attachments)
+        # if attachments:
+        #     print(await attachments[0].read())
         """ if(msg.content == "check_channel_id"):
             print(f'Dc_msg: {msg.channel.id}')
         if msg.content == '<:MeMe:616147400792342538>' and msg.author != self.bot.user:

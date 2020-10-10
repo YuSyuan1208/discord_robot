@@ -59,30 +59,31 @@ class React(Cog_Extension):
     _name = 'react'
     _file_data = {}
     _data = {}
+    logger = logger
 
-    def __init__(self, bot):
-        super().__init__(bot)
-        if self._name:
-            logger.info(self._name + ' init')
-            self.file('r')
-        else:
-            logger.error('_name not setting.')
+    # def __init__(self, bot):
+    #     super().__init__(bot)
+    #     if self._name:
+    #         logger.info(self._name + ' init')
+    #         self.file('r')
+    #     else:
+    #         logger.error('_name not setting.')
 
-    def file(self, type):
-        if type == 'r':
-            if os.path.isfile('./data/'+self._name+'.json'):
-                logger.info(self._name + ' file getting.')
-                with open('./data/'+self._name+'.json', 'r', encoding='utf8') as jfile:
-                    self._file_data = json.load(jfile)
-                return True
-            else:
-                logger.warning(self._name + ' file not find.')
-                return False
-        elif type == 'w':
-            logger.info(self._name + ' file saving.')
-            f = open('./data/'+self._name+'.json', 'w')
-            f.write(json.dumps(self._file_data))
-            f.close()
+    # def file(self, type):
+    #     if type == 'r':
+    #         if os.path.isfile('./data/'+self._name+'.json'):
+    #             logger.info(self._name + ' file getting.')
+    #             with open('./data/'+self._name+'.json', 'r', encoding='utf8') as jfile:
+    #                 self._file_data = json.load(jfile)
+    #             return True
+    #         else:
+    #             logger.warning(self._name + ' file not find.')
+    #             return False
+    #     elif type == 'w':
+    #         logger.info(self._name + ' file saving.')
+    #         f = open('./data/'+self._name+'.json', 'w')
+    #         f.write(json.dumps(self._file_data))
+    #         f.close()
 
     @commands.command()
     async def _check(self, ctx):
@@ -101,29 +102,11 @@ class React(Cog_Extension):
     @commands.Cog.listener()
     async def on_ready(self):
         logger.info(self._name + ' on_ready.')
-        if await self.get_react_data():
+        if await self._get_message_data():
             self.add_command()
 
-    async def get_react_data(self):
-        if self._file_data:
-            channel_id = self._file_data['channel_id']  # 750943234691432510
-            msg_id = self._file_data['msg_id']  # 750946905751814224
-            channel = self.bot.get_channel(channel_id)
-            if not channel:
-                logger.warning(self._name + f' channel not find.(channel_id={channel_id})')
-                return False
-            msg = await channel.fetch_message(msg_id)
-            if not msg:
-                logger.warning(self._name + f' message not find.(msg_id={msg_id})')
-                return False
-            content = msg.content
-
-            self._data = ast.literal_eval(content)
-            logger.info(self._name + ' message getting.')
-            return True
-        else:
-            logger.warning(self._name + ' no data.')
-            return False
+    async def _get_message_data(self):
+        return await super()._get_message_data()
 
     def add_command(self, names=[]):
         data = self._data
@@ -133,10 +116,10 @@ class React(Cog_Extension):
             for name in names:
                 cmd_obj = self.bot.get_command(name)
                 if cmd_obj:
-                    logger.debug(self._name + f'ins_com:, {data[name]}, {name}')
+                    logger.debug(self._name + f' ins_com:, {data[name]}, {name}')
                     cmd_obj.callback.__self__.msg = data[name]
                 else:
-                    logger.debug(self._name + f'add_com:, {data[name]}, {name}')
+                    logger.debug(self._name + f' add_com:, {data[name]}, {name}')
                     obj = cms_class()
                     obj.msg = data[name]
                     self.bot.add_command(commands.Command(obj.add_cmd, name=name))
@@ -150,7 +133,7 @@ class React(Cog_Extension):
     async def at(self, ctx, *msg):
         content = ' '.join(msg[0:])
         ast_content = ast.literal_eval(content)
-        logger.debug()
+        # logger.debug()
         for key, value in ast_content.items():
             if key in self._data:
                 self._data[key] += value
@@ -296,7 +279,7 @@ def setup(bot):
 # async def 發瘋(self, ctx):
 #     tmp = ['https://cdn.discordapp.com/attachments/573893555052085249/681117980230287420/v2-0f1a666e5bb6db7f57f7e760756ed9ed_hd.gif',
 #            'https://cdn.discordapp.com/attachments/573893555052085249/681118057803939866/tenor_19.gif',
-#            'https://cdn.discordapp.com/attachments/573893555052085249/681118142789058589/tenor_7-1.gif',
+#            'https://cdn.discordapp.com/attachments/573893555052085249/6811181427890                    58589/tenor_7-1.gif',
 #            'https://cdn.discordapp.com/attachments/573893555052085249/681118244220043287/SmWnZXg.gif',
 #            'https://cdn.discordapp.com/attachments/573893555052085249/681117998626373659/shake.gif',
 #            'https://cdn.discordapp.com/attachments/573893555052085249/681118739395248335/8f28dd0a6506cd028eff3d107a526b09.gif',

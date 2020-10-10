@@ -8,15 +8,18 @@ from model.func import *
 #import keep_alive
 import re
 import logging
+import coloredlogs
 from logging.config import fileConfig
+
+
 # 读取日志配置文件内容
 logging.config.fileConfig('.\\data\\logging_config.ini')
+coloredlogs.install(level='DEBUG')
 
 
 logger_discord = logging.getLogger('discord')
 
 logger = logging.getLogger(__name__)
-
 
 # logger_root = logging.getLogger(name = 'root')
 # discord.client
@@ -29,10 +32,11 @@ bot = commands.Bot(
 
 @bot.event
 async def on_ready():
-    print('Logged in as')
-    print(bot.user.name)
-    print(bot.user.id)
-    print('------')
+    logger.info('------')
+    logger.info('Logged in as')
+    logger.info(bot.user.name)
+    logger.info(bot.user.id)
+    logger.info('------')
     # logger_root.debug('main test.')
 
 
@@ -82,6 +86,7 @@ for filename in os.listdir('./cmds'):
         if not team_fight_function_enable:
             if filename == 'team_fight.py':
                 continue
+        logger.info(f'Bot extension loading.(filename= {filename})')
         bot.load_extension(f'cmds.{filename[:-3]}')
 
 if __name__ == "__main__":

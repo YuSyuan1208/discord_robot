@@ -102,10 +102,11 @@ if team_fight_function_enable:
 """ --------------- Getting Data --------------- """
 
 
-def admin_check(user_id,bot):
+def admin_check(user_id, bot):
     if user_id in get_role_members(bot):
         return True
     return False
+
 
 def get_role_members(bot):
     # 573893554577866777 窩們一起學牛叫：O
@@ -117,6 +118,7 @@ def get_role_members(bot):
     role = server.get_role(734391146910056478)
     member_ids = [member.id for member in role.members]
     return member_ids
+
 
 class list_msg_empty:
     id = 0
@@ -150,6 +152,7 @@ def admin_save():
     f = open("./data/setting.json", "w")
     f.write(json.dumps(setting_data))
     f.close()
+
 
 """ def team_fight_setting_save():
     f = open("./data/team_fight_setting.json", "w")

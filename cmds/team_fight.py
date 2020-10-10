@@ -23,7 +23,8 @@ import json
 import array
 from model.func import *
 import sys
-
+import logging
+logger = logging.getLogger(__name__)
 
 """ img_url_list = team_fight_setting['img_url_list']
 unit_list = team_fight_setting['unit_list']
@@ -66,6 +67,8 @@ overflow_cancel_emoji = '🆖'
 
 
 class Team_Fight(Cog_Extension):
+
+    _name = 'team_fight'
 
     """ ----------------- 重啟清單比對 -----------------"""
 
@@ -289,7 +292,6 @@ class Team_Fight(Cog_Extension):
                 list_msg_tmp[i][0] = week
                 list_msg_tmp[i][1] = tea_fig_KingIndexToKey(
                     All_OutKnife_Data[1], king)
-        print('--------------')
 
     """ ----------------- 重啟清單比對 -----------------"""
 

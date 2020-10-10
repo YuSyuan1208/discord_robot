@@ -4,9 +4,13 @@ from core.classes import Cog_Extension
 from model.func import *
 import array
 import os
+import logging
+logger = logging.getLogger(__name__)
+
 
 class Main(Cog_Extension):
 
+    _name = 'main'
     # main_str = """\n{
     #     channel_id:,
     #     msg_id:,\n}"""
