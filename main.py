@@ -44,7 +44,7 @@ async def on_resumed():
 @bot.command()
 async def load(ctx, extension):
     author_id = ctx.author.id
-    if(admin_check(author_id) == True):
+    if(admin_check(author_id, ctx.bot) == True):
         if os.path.isfile(f'.\\cmds\\{extension}'):
             bot.load_extension(f'cmds.{extension}.py')
             await ctx.send(f'Loaded {extension}')
@@ -55,7 +55,7 @@ async def load(ctx, extension):
 @bot.command()
 async def unload(ctx, extension):
     author_id = ctx.author.id
-    if(admin_check(author_id) == True):
+    if(admin_check(author_id, ctx.bot) == True):
         if os.path.isfile(f'.\\cmds\\{extension}.py'):
             bot.unload_extension(f'cmds.{extension}')
             await ctx.send(f'Unloaded {extension}')
@@ -66,12 +66,13 @@ async def unload(ctx, extension):
 @bot.command()
 async def reload(ctx, extension):
     author_id = ctx.author.id
-    if(admin_check(author_id) == True):
+    if(admin_check(author_id, ctx.bot) == True):
         if os.path.isfile(f'.\\cmds\\{extension}.py'):
             bot.reload_extension(f'cmds.{extension}')
             await ctx.send(f'Reloaded {extension}')
         else:
             logger.warning(f'Extension cmds.{extension} has not been loaded')
+
 
 # help ending note
 """ bot.help_command.get_ending_note """

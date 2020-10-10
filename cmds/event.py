@@ -50,6 +50,20 @@ class Event(Cog_Extension):
     async def event_test(self, ctx):
         return 0
 
+    @commands.command()
+    async def get_msg_id(self, ctx, number):
+        channel_id = ctx.channel.id
+        channel = self.bot.get_channel(only_meme_speak_channel)
+        if channel_id == only_meme_speak_channel:
+            mgs = []
+            number = int(number)
+            n = 1
+            async for message in ctx.channel.history():
+                print(message.created_at, message.id)
+                n += 1
+                if n > number:
+                    break
+
 
 def setup(bot):
     bot.add_cog(Event(bot))
