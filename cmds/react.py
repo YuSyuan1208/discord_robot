@@ -23,16 +23,16 @@ test
 # 创建一个日志器logger
 
 
+import logging
+import ast
+import os
+from model.func import *
+import array
+import json
+import random
 import discord
 from discord.ext import commands
-from core.classes import Cog_Extension
-import random
-import json
-import array
-from model.func import *
-import os
-import ast
-import logging
+from core.classes import Cog_Extension, cms_class
 logger = logging.getLogger(__name__)
 
 
@@ -154,6 +154,7 @@ class React(Cog_Extension):
             if not msg:
                 logger.warning(self._name + f' message not find.({msg_id})')
                 return False
+            logger.debug(self._name + f' message get.(msg= {msg})')
             await msg.edit(content=json.dumps(self._data, indent=4))
 
     @commands.Cog.listener()
@@ -172,15 +173,6 @@ class React(Cog_Extension):
             print(True)
         else:
             print(payload.emoji.name, msg.content)
-
-
-class cms_class:
-    msg = []
-    author_id = 0
-    channel_id = 0
-
-    async def add_cmd(self, ctx, *argv):
-        await ctx.send(random.choice(self.msg).format(ctx=ctx, input=argv))
 
 # @commands.command()
 # async def aaa(self,ctx):
