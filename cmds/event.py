@@ -29,10 +29,13 @@ class Event(Cog_Extension):
         content = msg.content
         msg_id = msg.id
         attachments = msg.attachments
-        # print('ch_id:', channel_id, 'msg_id:', msg_id, 'aut_id:',
-        #       author_id, 'con:', content, 'attach:', attachments)
-        # if attachments:
-        #     print(await attachments[0].read())
+        print('ch_id:', channel_id, 'msg_id:', msg_id, 'aut_id:',
+              author_id, 'con:', content, 'attach:', attachments)
+        if attachments and msg.author != self.bot.user:
+            file = attachments[0]
+            file.filename = f"test_{file.filename}"
+            spoiler = await file.to_file()
+            await msg.channel.send(file=spoiler)
         """ if(msg.content == "check_channel_id"):
             print(f'Dc_msg: {msg.channel.id}')
         if msg.content == '<:MeMe:616147400792342538>' and msg.author != self.bot.user:
@@ -42,17 +45,15 @@ class Event(Cog_Extension):
     async def cleartest(self, ctx, number):
         channel_id = ctx.channel.id
         # print(channel_id)
-        channel = self.bot.get_channel(only_meme_speak_channel)
-        if channel_id == only_meme_speak_channel:
-            mgs = []
-            number = int(number)
-            n = 1
-            async for message in ctx.channel.history():
-                mgs.append(message)
-                n = n + 1
-                if(n > number):
-                    break
-            await channel.delete_messages(mgs)
+        # channel = self.bot.get_channel(only_meme_speak_channel)
+        # if channel_id == only_meme_speak_channel:
+        mgs = []
+        number = int(number)
+        async for message in ctx.channel.history(limit=int(number)):
+            mgs.append(message)
+        for m in mgs:
+            print(m.content)
+        # await channel.delete_messages(mgs)
 
     @commands.command()
     async def event_test(self, ctx):

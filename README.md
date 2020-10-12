@@ -115,3 +115,6 @@ https://www.itread01.com/content/1544664781.html
 4. 做個tag當王清單所有人的指令
 5. 報名清單備註補償人員(在補償清單中)
 ---------------------------------------------------
+
+網路勾手
+https://support.discord.com/hc/zh-tw/articles/228383668
