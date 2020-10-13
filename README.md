@@ -118,3 +118,9 @@ https://www.itread01.com/content/1544664781.html
 
 網路勾手
 https://support.discord.com/hc/zh-tw/articles/228383668
+
+typing() - 正在輸入中 
+---------------------------------------------------
+trigger_typing()
+
+---------------------------------------------------

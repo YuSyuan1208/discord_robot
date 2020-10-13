@@ -57,7 +57,13 @@ class Event(Cog_Extension):
 
     @commands.command()
     async def event_test(self, ctx):
-        return 0
+        async with ctx.typing():
+            # do expensive stuff here
+            await ctx.send('done!')
+
+    @commands.command()
+    async def event_test2(self, ctx):
+        await ctx.send('test!')
 
     @commands.command()
     async def get_msg_id(self, ctx, number):

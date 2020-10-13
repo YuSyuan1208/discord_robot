@@ -39,34 +39,37 @@ class Cog_Extension(commands.Cog):
             f.write(json.dumps(self._file_data))
             f.close()
 
-    async def _get_message_data(self, history=False, limit=100):
+    async def _get_message_obj(self, history=False, limit=100):
         if self._file_data:
             channel_id = self._file_data['channel_id']  # 750943234691432510
-            msg_id = self._file_data['msg_id']  # 750946905751814224
+            msg_ids = [self._file_data['msg_id']]  # 750946905751814224
             channel = self.bot.get_channel(channel_id)
             if not channel:
                 logger.warning(self._name + f' channel not find.(channel_id={channel_id})')
                 return False
 
-            msgs = []
+            msg_objs = []
             if history:
                 logger.info(self._name + ' channel history content getting.')
                 async for message in channel.history(limit=int(limit)):
-                    msgs.append(message)
+                    if message.id in msg_ids:
+                        msg_objs.append(message)
             else:
-                logger.info(self._name + ' channel message content getting.')
-            
-            try:
-                msg = await channel.fetch_message(msg_id)
-            except:
-                logger.warning(self._name + f' message not find.(msg_id={msg_id})')
-                return False
-            content = msg.content
-            logger.debug(self._name + f' fetch_message .(msg.content={content})')
+                logger.info(self._name + ' channel fetch_message content getting.')
+                for msg_id in msg_ids:
+                    message = await channel.fetch_message(msg_id)
+                    msg_objs.append(message)
+            """ for msg_id in msg_ids:
+                msg = msg_objs.get(msg_id,False)
+                if not msg:
+                    logger.warning(self._name + f' message not find.(msg_id={msg_id})')
+                    return False
+                content = msg.content
+                logger.debug(self._name + f' fetch_message .(id={msg_id}, content={content})')
+                self._data = {'id':msg_id ,'content':ast.literal_eval(content)} """
 
-            self._data = ast.literal_eval(content)
             logger.info(self._name + ' message get.')
-            return True
+            return msg_objs
         else:
             logger.warning(self._name + ' no data.')
             return False
