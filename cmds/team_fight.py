@@ -88,10 +88,15 @@ class Team_Fight(Cog_Extension):
             msg_tip.append(await run_channel.send(content=f'系統斷線重啟，資料核對中，請勿操作'))
 
             ''' now message object '''
+            # messsage history getting
+            msg_objs = {}
+            async for message in only_meme_speak_channel_obj.history(limit=100):
+                msg_objs[message.id] = message
+
             # [now] get data
             msg_tip.append(await run_channel.send(content=f'周,王 核對開始'))
             try:
-                now_msg[0] = await only_meme_speak_channel_obj.fetch_message(now['msg_id'])
+                now_msg[0] = msg_objs[now['msg_id']]
                 now_tmp = now_msg[0].content.replace('```', '')  # get message
                 week_dc = int(now_tmp.split('周:')[1].split(',')[0])
                 king_dc = int(now_tmp.split('王:')[1].split(',')[0])
@@ -142,7 +147,7 @@ class Team_Fight(Cog_Extension):
                 if id == 0:
                     msg_obj = list_msg_empty()
                 else:
-                    msg_obj = await only_meme_speak_channel_obj.fetch_message(id)
+                    msg_obj = msg_objs[id]
                     msg_obj_list.append(msg_obj)
                 list_msg_tmp.append([0, 0, msg_obj])
 
@@ -269,14 +274,18 @@ class Team_Fight(Cog_Extension):
             only_meme_speak_channel_obj = bot.get_channel(only_meme_speak_channel)
             run_channel = bot.get_channel(run_out_before_look)
             backup_channel = bot.get_channel(backup_channel_id)
+            # messsage history getting
+            msg_objs = {}
+            async for message in only_meme_speak_channel_obj.history(limit=100):
+                msg_objs[message.id] = message
             msg_obj_list = []
-            now_msg[0] = await only_meme_speak_channel_obj.fetch_message(now['msg_id'])
+            now_msg[0] = msg_objs[now['msg_id']] 
             for id in list_msg_tmp_id:
                 # print(id) # message id
                 if id == 0:
                     msg_obj = list_msg_empty()
                 else:
-                    msg_obj = await only_meme_speak_channel_obj.fetch_message(id)
+                    msg_obj = msg_objs[id]
                     msg_obj_list.append(msg_obj)
                 list_msg_tmp.append([0, 0, msg_obj])
             now_week = now['周']

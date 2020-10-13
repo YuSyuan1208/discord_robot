@@ -39,7 +39,7 @@ class Cog_Extension(commands.Cog):
             f.write(json.dumps(self._file_data))
             f.close()
 
-    async def _get_message_data(self, history=False, limit=10):
+    async def _get_message_data(self, history=False, limit=100):
         if self._file_data:
             channel_id = self._file_data['channel_id']  # 750943234691432510
             msg_id = self._file_data['msg_id']  # 750946905751814224
@@ -51,10 +51,11 @@ class Cog_Extension(commands.Cog):
             msgs = []
             if history:
                 logger.info(self._name + ' channel history content getting.')
-                async for message in ctx.channel.history(limit=int(number)):
-                    mgs.append(message)
+                async for message in channel.history(limit=int(limit)):
+                    msgs.append(message)
             else:
                 logger.info(self._name + ' channel message content getting.')
+            
             try:
                 msg = await channel.fetch_message(msg_id)
             except:
