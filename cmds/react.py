@@ -102,11 +102,11 @@ class React(Cog_Extension):
     @commands.Cog.listener()
     async def on_ready(self):
         logger.info(self._name + ' on_ready.')
-        if await self._get_message_data():
+        if await self._get_message_obj():
             self.add_command()
 
-    async def _get_message_data(self):
-        return await super()._get_message_data()
+    """ async def _get_message_obj(self):
+        return await super()._get_message_obj() """
 
     def add_command(self, names=[]):
         data = self._data
