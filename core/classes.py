@@ -15,6 +15,7 @@ class Cog_Extension(commands.Cog):
     _data = {}
 
     def __init__(self, bot):
+        """  """
         self.bot = bot
         if self._name:
             logger.info(self._name + ' init')
@@ -24,6 +25,7 @@ class Cog_Extension(commands.Cog):
             raise NameError('model _name not setting.')
 
     def file(self, type):
+        """ file control """
         if type == 'r':
             if os.path.isfile('./data/'+self._name+'.json'):
                 logger.info(self._name + ' file getting.')
@@ -38,15 +40,22 @@ class Cog_Extension(commands.Cog):
             f = open('./data/'+self._name+'.json', 'w')
             f.write(json.dumps(self._file_data))
             f.close()
+        raise ValueError(f'type not find.(type={type})')
 
-    async def _get_message_obj(self, msg_ids=[], history=True, **knews):
+    def _str_to_list(self,str):
+        """ covert message object content to list """
+        ast_content = ast.literal_eval(str)
+        return ast_content
+
+    async def _get_message_obj(self, channel_id=0 , msg_ids=[], history=True, setting={}):
         """ Get message object.
-
+            
+            return message object array (msg_objs)
         """
-        limit = knews.get('limit',100)
+        limit = setting.get('limit',100)
 
-        if self._file_data:
-            channel_id = self._file_data['channel_id']  # 750943234691432510
+        if channel_id:
+            # channel_id = self._file_data['channel_id']  # 750943234691432510
             # msg_ids = [self._file_data['msg_id']]  # 750946905751814224
             channel = self.bot.get_channel(channel_id)
             if not channel:
@@ -61,6 +70,8 @@ class Cog_Extension(commands.Cog):
                     if not msg_ids or message.id in msg_ids:
                         msg_objs.append(message)
                         com_msg_ids.append(message.id)
+                        logger.debug(self._name + f' message.id: {message.id}')
+
                 com_msg_ids = set(msg_ids) - set(com_msg_ids)
                 if com_msg_ids:
                     logger.warning(self._name + f' message not find.(msg_id={com_msg_ids})')
@@ -76,9 +87,8 @@ class Cog_Extension(commands.Cog):
             logger.info(self._name + ' message object get.')
             return msg_objs
         else:
-            logger.warning(self._name + ' no data.')
+            logger.warning(self._name + ' no message object data.')
             return False
-
 
 class cms_class:
     id = 0

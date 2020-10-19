@@ -41,13 +41,14 @@ class React(Cog_Extension):
     # setting
     """ ch_id: 750943234691432510
     msg_id: 752519979173150771
-    aut_id: 312939009879834624 """
+    aut_id: 312939009879834624 
 
-    """
     [role]
     @Test   -   <@&734391146910056478>
+
     [member]
     @廉價勞工   -   <@!312939009879834624>
+
     [guild]
     功德無量    -   727170387091259393
     """
@@ -59,6 +60,7 @@ class React(Cog_Extension):
     _name = 'react'
     _file_data = {}
     _data = {}
+    
     logger = logger
 
     # def __init__(self, bot):
@@ -102,11 +104,20 @@ class React(Cog_Extension):
     @commands.Cog.listener()
     async def on_ready(self):
         logger.info(self._name + ' on_ready.')
-        if await self._get_message_obj():
-            self.add_command()
+        await self._get_message_setting()
+        """ /* 752886850435416264-767615688755118091 */ """
 
-    """ async def _get_message_obj(self):
-        return await super()._get_message_obj() """
+    async def _get_message_setting(self):
+        # 依據檔案的channel、message id 取得message object
+        msg_ids = [self._file_data['msg_id']]
+        channel_id = self._file_data['channel_id']
+        msg_objs = await self._get_message_obj(channel_id=channel_id, msg_ids=msg_ids)
+        if msg_objs:
+            self._data.setdefault('setting',self._str_to_list(msg_objs[0].content))
+            logger.debug(self._name + f' _data: {self._data}')
+            logger.info(self._name + ' _data get.')
+        else:
+            logger.warning(self._name + f' _data not get.')
 
     def add_command(self, names=[]):
         data = self._data
@@ -116,10 +127,10 @@ class React(Cog_Extension):
             for name in names:
                 cmd_obj = self.bot.get_command(name)
                 if cmd_obj:
-                    logger.debug(self._name + f' ins_com:, {data[name]}, {name}')
+                    logger.debug(self._name + f' ins_com: {data[name]}, {name}')
                     cmd_obj.callback.__self__.msg = data[name]
                 else:
-                    logger.debug(self._name + f' add_com:, {data[name]}, {name}')
+                    logger.debug(self._name + f' add_com: {data[name]}, {name}')
                     obj = cms_class()
                     obj.msg = data[name]
                     self.bot.add_command(commands.Command(obj.add_cmd, name=name))
