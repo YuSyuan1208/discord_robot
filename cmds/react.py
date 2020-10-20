@@ -60,7 +60,7 @@ class React(Cog_Extension):
     _name = 'react'
     _file_data = {}
     _data = {}
-    
+
     logger = logger
 
     # def __init__(self, bot):
@@ -108,36 +108,33 @@ class React(Cog_Extension):
         """ /* 752886850435416264-767615688755118091 */ """
 
     async def _get_message_setting(self):
-        # 依據檔案的channel、message id 取得message object
+        """ 依據檔案的channel、message id 取得message object """
         msg_ids = [self._file_data['msg_id']]
         channel_id = self._file_data['channel_id']
         msg_objs = await self._get_message_obj(channel_id=channel_id, msg_ids=msg_ids)
         if msg_objs:
-            self._data.setdefault('setting',self._str_to_list(msg_objs[0].content))
+            self._data.setdefault('setting', self._str_to_list(msg_objs[0].content))
             logger.debug(self._name + f' _data: {self._data}')
             logger.info(self._name + ' _data get.')
         else:
             logger.warning(self._name + f' _data not get.')
 
-    def add_command(self, names=[]):
-        data = self._data
-        if data:
-            if not names:
-                names = data
-            for name in names:
-                cmd_obj = self.bot.get_command(name)
-                if cmd_obj:
-                    logger.debug(self._name + f' ins_com: {data[name]}, {name}')
-                    cmd_obj.callback.__self__.msg = data[name]
-                else:
-                    logger.debug(self._name + f' add_com: {data[name]}, {name}')
-                    obj = cms_class()
-                    obj.msg = data[name]
-                    self.bot.add_command(commands.Command(obj.add_cmd, name=name))
+    def _set_command(self, name, setting={}):
+        if name:
+            cmd_obj = self.bot.get_command(name)
+            if cmd_obj:
+                logger.debug(self._name + f' ins_com: {name},{setting}')
+                cmd_obj.callback.__self__.id = setting['id']
+                cmd_obj.callback.__self__.msg = setting['msg']
+            else:
+                logger.debug(self._name + f' add_com: {name},{setting}')
+                obj = cms_class()
+                obj.msg = setting['msg']
+                self.bot.add_command(commands.Command(obj.add_cmd, name=name))
             logger.info(self._name + ' cmds complete.')
             return True
         else:
-            logger.warning(self._name + ' cmds no data.')
+            logger.warning(self._name + ' name not set.')
             return False
 
     @commands.command()
@@ -150,7 +147,7 @@ class React(Cog_Extension):
                 self._data[key] += value
             else:
                 self._data.update({key: value})
-        self.add_command()
+        self._set_command()
         await self.msg_change()
 
     async def msg_change(self):

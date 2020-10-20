@@ -42,17 +42,17 @@ class Cog_Extension(commands.Cog):
             f.close()
         raise ValueError(f'type not find.(type={type})')
 
-    def _str_to_list(self,str):
+    def _str_to_list(self, str):
         """ covert message object content to list """
         ast_content = ast.literal_eval(str)
         return ast_content
 
-    async def _get_message_obj(self, channel_id=0 , msg_ids=[], history=True, setting={}):
+    async def _get_message_obj(self, channel_id=0, msg_ids=[], history=True, setting={}):
         """ Get message object.
-            
+
             return message object array (msg_objs)
         """
-        limit = setting.get('limit',100)
+        limit = setting.get('limit', 100)
 
         if channel_id:
             # channel_id = self._file_data['channel_id']  # 750943234691432510
@@ -90,8 +90,10 @@ class Cog_Extension(commands.Cog):
             logger.warning(self._name + ' no message object data.')
             return False
 
+
 class cms_class:
     id = 0
     msg = []
-    async def add_cmd(self, ctx, *argv):
-        await ctx.send(random.choice(self.msg).format(ctx=ctx, input=argv))
+
+    async def add_cmd(self, ctx, *argv, **knews):
+        await ctx.send(random.choice(self.msg).format(ctx=ctx, argv=argv, knews=knews))
