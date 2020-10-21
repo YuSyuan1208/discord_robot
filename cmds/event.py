@@ -29,8 +29,7 @@ class Event(Cog_Extension):
         content = msg.content
         msg_id = msg.id
         attachments = msg.attachments
-        print('ch_id:', channel_id, 'msg_id:', msg_id, 'aut_id:',
-              author_id, 'con:', content, 'attach:', attachments)
+        # print('ch_id:', channel_id, 'msg_id:', msg_id, 'aut_id:', author_id, 'con:', content, 'attach:', attachments)
         if attachments and msg.author != self.bot.user:
             file = attachments[0]
             file.filename = f"test_{file.filename}"

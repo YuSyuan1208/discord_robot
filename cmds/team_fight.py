@@ -82,190 +82,190 @@ class Team_Fight(Cog_Extension):
             run_channel = bot.get_channel(run_out_before_look)
             backup_channel = bot.get_channel(backup_channel_id)
 
-            await backup_channel.send(content=f'系統斷線重啟')
+            # await backup_channel.send(content=f'系統斷線重啟')
             msg_tip = []
             change_content_list = []  # if system changed save there
             msg_tip.append(await run_channel.send(content=f'系統斷線重啟，資料核對中，請勿操作'))
+            async with run_channel.typing():
+                ''' now message object '''
+                # messsage history getting
+                msg_objs = {}
+                async for message in only_meme_speak_channel_obj.history(limit=100):
+                    msg_objs[message.id] = message
 
-            ''' now message object '''
-            # messsage history getting
-            msg_objs = {}
-            async for message in only_meme_speak_channel_obj.history(limit=100):
-                msg_objs[message.id] = message
+                # [now] get data
+                # msg_tip.append(await run_channel.send(content=f'周,王 核對開始'))
+                try:
+                    now_msg[0] = msg_objs[now['msg_id']]
+                    now_tmp = now_msg[0].content.replace('```', '')  # get message
+                    week_dc = int(now_tmp.split('周:')[1].split(',')[0])
+                    king_dc = int(now_tmp.split('王:')[1].split(',')[0])
+                    # limit_dc = int(now_tmp.split('限制周:')[1].split(',')[0])
+                    # msg_tip.append(await run_channel.send(content=f'目前進度, 周:{week_dc}, 王:{king_dc}'))
+                    week_sys = int(now['force_week'])
+                    king_sys = int(now['王'])
+                    limit_sys = int(now['limit_max_week'])
+                    # msg_tip.append(await run_channel.send(content=f'系統進度, 周:{week_sys}, 王:{king_sys}'))
 
-            # [now] get data
-            msg_tip.append(await run_channel.send(content=f'周,王 核對開始'))
-            try:
-                now_msg[0] = msg_objs[now['msg_id']]
-                now_tmp = now_msg[0].content.replace('```', '')  # get message
-                week_dc = int(now_tmp.split('周:')[1].split(',')[0])
-                king_dc = int(now_tmp.split('王:')[1].split(',')[0])
-                # limit_dc = int(now_tmp.split('限制周:')[1].split(',')[0])
-                msg_tip.append(await run_channel.send(content=f'目前進度, 周:{week_dc}, 王:{king_dc}'))
-                week_sys = int(now['force_week'])
-                king_sys = int(now['王'])
-                limit_sys = int(now['limit_max_week'])
-                msg_tip.append(await run_channel.send(content=f'系統進度, 周:{week_sys}, 王:{king_sys}'))
+                    # [now] compare data
+                    now_changed_content = ''
+                    # week_tmp = week_dc - int(now['周'])
+                    if (week_dc != week_sys):
+                        now['force_week'] = week_dc
+                        now_changed_content += f'```arm\n周:{week_sys} -> {week_dc}\n```'
+                    # king_tmp = king_dc - int(now['王'])
+                    if (king_dc != king_sys):
+                        now['王'] = king_dc
+                        now_changed_content += f'```arm\n王:{king_sys} -> {king_dc}\n```'
+                    # limit_tmp = limit_dc - int(now['limit_max_week'])
+                    """ if (limit_dc != limit_sys):
+                        now['limit_max_week'] = limit_dc
+                        now_changed_content += f'```arm\n限制周:{limit_sys} -> {limit_dc}\n```' """
+                    if(now_changed_content):
+                        # print (now_changed_content)
+                        change_content_list.append(now_changed_content)
+                        # await run_channel.send(content=now_changed_content)
+                        now_save()
+                    # msg_tip.append(await run_channel.send(content=f'周,王 核對完畢'))
+                except:
+                    error = f'周,王 核對失敗，資料可能遺失'
+                    await run_channel.send(content=error)
+                    # await backup_channel.send(content=error)
 
-                # [now] compare data
-                now_changed_content = ''
-                # week_tmp = week_dc - int(now['周'])
-                if (week_dc != week_sys):
-                    now['force_week'] = week_dc
-                    now_changed_content += f'```arm\n周:{week_sys} -> {week_dc}\n```'
-                # king_tmp = king_dc - int(now['王'])
-                if (king_dc != king_sys):
-                    now['王'] = king_dc
-                    now_changed_content += f'```arm\n王:{king_sys} -> {king_dc}\n```'
-                # limit_tmp = limit_dc - int(now['limit_max_week'])
-                """ if (limit_dc != limit_sys):
-                    now['limit_max_week'] = limit_dc
-                    now_changed_content += f'```arm\n限制周:{limit_sys} -> {limit_dc}\n```' """
+                # [now] backup data
                 if(now_changed_content):
-                    # print (now_changed_content)
-                    change_content_list.append(now_changed_content)
-                    # await run_channel.send(content=now_changed_content)
-                    now_save()
-                msg_tip.append(await run_channel.send(content=f'周,王 核對完畢'))
-            except:
-                error = f'周,王 核對失敗，資料可能遺失'
-                await run_channel.send(content=error)
-                await backup_channel.send(content=error)
+                    # msg_tip.append(await run_channel.send(content=f'資料有更動，備份中'))
+                    await backup_channel.send(content=now_changed_content)
+                    # msg_tip.append(await run_channel.send(content=f'備份完成'))
 
-            # [now] backup data
-            if(now_changed_content):
-                msg_tip.append(await run_channel.send(content=f'資料有更動，備份中'))
-                await backup_channel.send(content=now_changed_content)
-                msg_tip.append(await run_channel.send(content=f'備份完成'))
+                ''' list message object '''
+                # [list] get data
+                # msg_tip.append(await run_channel.send(content=f'報名清單 核對開始'))
+                msg_obj_list = []
+                for id in list_msg_tmp_id:
+                    # print(id) # message id
+                    if id == 0:
+                        msg_obj = list_msg_empty()
+                    else:
+                        msg_obj = msg_objs[id]
+                        msg_obj_list.append(msg_obj)
+                    list_msg_tmp.append([0, 0, msg_obj])
 
-            ''' list message object '''
-            # [list] get data
-            msg_tip.append(await run_channel.send(content=f'報名清單 核對開始'))
-            msg_obj_list = []
-            for id in list_msg_tmp_id:
-                # print(id) # message id
-                if id == 0:
-                    msg_obj = list_msg_empty()
-                else:
-                    msg_obj = msg_objs[id]
-                    msg_obj_list.append(msg_obj)
-                list_msg_tmp.append([0, 0, msg_obj])
+                # try:
+                # [list] compare data
+                oo_week_wmp = 0
+                for msg_obj in msg_obj_list:
+                    list_changed_content = ''
+                    msg_embeds = msg_obj.embeds
+                    """ week_tmp = msg_obj.content.replace('```', '')
+                    week_tmp = int(re.findall("[0-9]+", week_tmp)[0]) """
+                    week_tmp = 1
+                    # print(week_tmp)
+                    if(oo_week_wmp != week_tmp):
+                        # msg_tip.append(await run_channel.send(content=f'{week_tmp}周'))
+                        oo_week_wmp = week_tmp
+                    for i in msg_embeds:
+                        king_tmp = i.author.name.split(' ')[0]
+                        # print(king_tmp) #i.author.name 王,hp
+                        sys_list_tmp = All_OutKnife_Data[week_tmp][king_tmp]['報名列表']
+                        sys_list_len = len(sys_list_tmp)
+                        # print(sys_list_len)
+                        no = 0
+                        # header
+                        dc_description = i.description
+                        sys_description = All_OutKnife_Data[week_tmp][king_tmp]['資訊']['header']
+                        # print(dc_description, sys_description)
+                        if(str(dc_description) != str(sys_description)) and (dc_description != discord.Embed.Empty):
+                            list_changed_content += f'```arm\n{week_tmp}周{king_tmp} 補償刀:{sys_description} -> {dc_description}\n```'
+                            All_OutKnife_Data[week_tmp][king_tmp]['資訊']['header'] = dc_description
+                        # hp
+                        if king_tmp not in ['補償清單', '出刀清單']:
+                            dc_footer = i.footer.text
+                            # print(dc_footer)
+                            dc_hp = dc_footer.split(':')[1].replace('W', '')
+                            sys_hp = All_OutKnife_Data[week_tmp][king_tmp]['資訊']['hp']
+                            # print(dc_hp, sys_hp)
+                            if(int(dc_hp) != int(sys_hp)):
+                                list_changed_content += f'```arm\n{week_tmp}周{king_tmp} 剩餘血量:{sys_hp} -> {dc_hp}\n```'
+                                All_OutKnife_Data[week_tmp][king_tmp]['資訊']['hp'] = int(
+                                    dc_hp)
 
-            # try:
-            # [list] compare data
-            oo_week_wmp = 0
-            for msg_obj in msg_obj_list:
-                list_changed_content = ''
-                msg_embeds = msg_obj.embeds
-                """ week_tmp = msg_obj.content.replace('```', '')
-                week_tmp = int(re.findall("[0-9]+", week_tmp)[0]) """
-                week_tmp = 1
-                # print(week_tmp)
-                if(oo_week_wmp != week_tmp):
-                    # msg_tip.append(await run_channel.send(content=f'{week_tmp}周'))
-                    oo_week_wmp = week_tmp
-                for i in msg_embeds:
-                    king_tmp = i.author.name.split(' ')[0]
-                    # print(king_tmp) #i.author.name 王,hp
-                    sys_list_tmp = All_OutKnife_Data[week_tmp][king_tmp]['報名列表']
-                    sys_list_len = len(sys_list_tmp)
-                    # print(sys_list_len)
-                    no = 0
-                    # header
-                    dc_description = i.description
-                    sys_description = All_OutKnife_Data[week_tmp][king_tmp]['資訊']['header']
-                    # print(dc_description, sys_description)
-                    if(str(dc_description) != str(sys_description)) and (dc_description != discord.Embed.Empty):
-                        list_changed_content += f'```arm\n{week_tmp}周{king_tmp} 補償刀:{sys_description} -> {dc_description}\n```'
-                        All_OutKnife_Data[week_tmp][king_tmp]['資訊']['header'] = dc_description
-                    # hp
-                    if king_tmp not in ['補償清單', '出刀清單']:
-                        dc_footer = i.footer.text
-                        # print(dc_footer)
-                        dc_hp = dc_footer.split(':')[1].replace('W', '')
-                        sys_hp = All_OutKnife_Data[week_tmp][king_tmp]['資訊']['hp']
-                        # print(dc_hp, sys_hp)
-                        if(int(dc_hp) != int(sys_hp)):
-                            list_changed_content += f'```arm\n{week_tmp}周{king_tmp} 剩餘血量:{sys_hp} -> {dc_hp}\n```'
-                            All_OutKnife_Data[week_tmp][king_tmp]['資訊']['hp'] = int(
-                                dc_hp)
+                        # 報名列表
+                        while(len(i.fields) < sys_list_len):
+                            sys_list_tmp.pop()
+                            sys_list_len -= 1
+                        for i2 in i.fields:
+                            tmp = i2.value.split(' ', 1)
+                            dc_id = tmp[0]
+                            all_str = tmp[1].split('-', 1)
+                            dc_damage = all_str[0].replace('W', '').replace('S', '')
+                            tmp_tmp = dc_damage.split(',')
+                            king_kill_index = int(tmp_tmp[1]) if len(tmp_tmp) > 1 else 0
+                            cut_out_index = int(tmp_tmp[2]) if len(tmp_tmp) > 2 else 0
+                            remark = all_str[1] if len(all_str) > 1 else False
+                            dc_damage = tmp_tmp[0]
+                            tree = 1 if '[掛樹]' in i2.name else False
 
-                    # 報名列表
-                    while(len(i.fields) < sys_list_len):
-                        sys_list_tmp.pop()
-                        sys_list_len -= 1
-                    for i2 in i.fields:
-                        tmp = i2.value.split(' ', 1)
-                        dc_id = tmp[0]
-                        all_str = tmp[1].split('-', 1)
-                        dc_damage = all_str[0].replace('W', '').replace('S', '')
-                        tmp_tmp = dc_damage.split(',')
-                        king_kill_index = int(tmp_tmp[1]) if len(tmp_tmp) > 1 else 0
-                        cut_out_index = int(tmp_tmp[2]) if len(tmp_tmp) > 2 else 0
-                        remark = all_str[1] if len(all_str) > 1 else False
-                        dc_damage = tmp_tmp[0]
-                        tree = 1 if '[掛樹]' in i2.name else False
+                            # print(dc_id,dc_damage)
+                            if(no < sys_list_len):
+                                sys_id = sys_list_tmp[no]['id']
+                                sys_damage = sys_list_tmp[no]['傷害']
+                                # print(sys_id,sys_damage)
+                                if (str(dc_id) != str(sys_id)) or (str(dc_damage) != str(sys_damage)):
+                                    list_changed_content += f'```arm\n{week_tmp}周{king_tmp} no.{no+1} id:{sys_id} -> {dc_id} info:{sys_damage} -> {dc_damage}\n```'
+                                    sys_list_tmp[no]['id'] = dc_id
+                                    sys_list_tmp[no]['傷害'] = dc_damage
+                            else:
+                                list_changed_content += f'```arm\n{week_tmp}周{king_tmp} no.{no+1} id: -> {dc_id} info: -> {dc_damage}\n```'
+                                l = len(sys_list_tmp)
+                                try:
+                                    dc_damage = int(dc_damage)
+                                except:
+                                    pass
+                                sys_list_tmp.insert(
+                                    l, {"id": dc_id, "傷害": dc_damage, "呼叫": king_kill_index, "進場": cut_out_index})
+                                if remark:
+                                    sys_list_tmp[l]["備註"] = remark
+                                if tree:
+                                    sys_list_tmp[l]["tree"] = 1
+                            no += 1
+                    if(list_changed_content):
+                        change_content_list.append(list_changed_content)
+                        # await run_channel.send(content=list_changed_content)
+                        # [list] backup data
+                        # msg_tip.append(await run_channel.send(content=f'資料有更動，備份中'))
+                        await backup_channel.send(content=list_changed_content)
+                        # msg_tip.append(await run_channel.send(content=f'備份完成'))
+                data_save()
+                now_save()
+                # msg_tip.append(await run_channel.send(content=f'報名清單 核對完畢'))
+                """ except:
+                    error = f'報名清單 核對失敗，資料可能遺失'
+                    await run_channel.send(content=error)
+                    await backup_channel.send(content=error) """
 
-                        # print(dc_id,dc_damage)
-                        if(no < sys_list_len):
-                            sys_id = sys_list_tmp[no]['id']
-                            sys_damage = sys_list_tmp[no]['傷害']
-                            # print(sys_id,sys_damage)
-                            if (str(dc_id) != str(sys_id)) or (str(dc_damage) != str(sys_damage)):
-                                list_changed_content += f'```arm\n{week_tmp}周{king_tmp} no.{no+1} id:{sys_id} -> {dc_id} info:{sys_damage} -> {dc_damage}\n```'
-                                sys_list_tmp[no]['id'] = dc_id
-                                sys_list_tmp[no]['傷害'] = dc_damage
-                        else:
-                            list_changed_content += f'```arm\n{week_tmp}周{king_tmp} no.{no+1} id: -> {dc_id} info: -> {dc_damage}\n```'
-                            l = len(sys_list_tmp)
-                            try:
-                                dc_damage = int(dc_damage)
-                            except:
-                                pass
-                            sys_list_tmp.insert(
-                                l, {"id": dc_id, "傷害": dc_damage, "呼叫": king_kill_index, "進場": cut_out_index})
-                            if remark:
-                                sys_list_tmp[l]["備註"] = remark
-                            if tree:
-                                sys_list_tmp[l]["tree"] = 1
-                        no += 1
-                if(list_changed_content):
-                    change_content_list.append(list_changed_content)
-                    # await run_channel.send(content=list_changed_content)
-                    # [list] backup data
-                    msg_tip.append(await run_channel.send(content=f'資料有更動，備份中'))
-                    await backup_channel.send(content=list_changed_content)
-                    msg_tip.append(await run_channel.send(content=f'備份完成'))
-            data_save()
-            now_save()
-            msg_tip.append(await run_channel.send(content=f'報名清單 核對完畢'))
-            """ except:
-                error = f'報名清單 核對失敗，資料可能遺失'
-                await run_channel.send(content=error)
-                await backup_channel.send(content=error) """
+                # [list] update list_msg_tmp
+                # msg_tip.append(await run_channel.send(content=f'資料同步開始'))
+                now_week = now['周']
+                now_king = 1
+                for i in range(0, list_refresh_max_index):
+                    if(i in bypass_list_index):
+                        continue
+                    # print("i",i,int(i / 6), int(i % 6))
+                    week = int(i / list_refresh_king) + now_week
+                    king = int(i % list_refresh_king) + now_king
+                    # print("周王",week, king)
+                    # print(list_msg_tmp[i][2].id)
+                    list_msg_tmp[i][0] = week
+                    list_msg_tmp[i][1] = tea_fig_KingIndexToKey(
+                        All_OutKnife_Data[1], king)
+                # msg_tip.append(await run_channel.send(content=f'資料同步完畢'))
+                msg_tip.append(await run_channel.send(content=f'系統重啟完成!(5秒後清除)'))
+                ''' delete message '''
+                for i in msg_tip:
+                    await i.delete(delay=5)
 
-            # [list] update list_msg_tmp
-            msg_tip.append(await run_channel.send(content=f'資料同步開始'))
-            now_week = now['周']
-            now_king = 1
-            for i in range(0, list_refresh_max_index):
-                if(i in bypass_list_index):
-                    continue
-                # print("i",i,int(i / 6), int(i % 6))
-                week = int(i / list_refresh_king) + now_week
-                king = int(i % list_refresh_king) + now_king
-                # print("周王",week, king)
-                # print(list_msg_tmp[i][2].id)
-                list_msg_tmp[i][0] = week
-                list_msg_tmp[i][1] = tea_fig_KingIndexToKey(
-                    All_OutKnife_Data[1], king)
-            msg_tip.append(await run_channel.send(content=f'資料同步完畢'))
-            msg_tip.append(await run_channel.send(content=f'系統重啟完成!(5秒後清除)'))
-            ''' delete message '''
-            for i in msg_tip:
-                await i.delete(delay=5)
-
-            await backup_channel.send(content=f'系統重啟完成!')
+                # await backup_channel.send(content=f'系統重啟完成!')
 
         ''' list message object (測試用)'''
         # [list] get data
@@ -434,8 +434,9 @@ class Team_Fight(Cog_Extension):
                     await ctx.send(f'{tmp[0]}進場成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}', delete_after=delete_after)
                     In_SignUp_List = All_OutKnife_Data[week][str(now['王'])+'王']["報名列表"]
                     in_index = tea_fig_list_check(In_SignUp_List, f'<@!{author_id}>')
-                    In_SignUp_List[in_index[0]]['進場'] += 1
-                    await self.meme_edit(ctx, week, now['王'], meme_in_index)
+                    if '進場' in in_index[0]:
+                        In_SignUp_List[in_index[0]]['進場'] += 1
+                        await self.meme_edit(ctx, week, now['王'], meme_in_index)
                 else:
                     send_msg = f'<@!{author_id}>{force_week}周{tmp[0]}報名成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}'
                     await ctx.send(send_msg, delete_after=delete_after)
@@ -775,8 +776,18 @@ class Team_Fight(Cog_Extension):
         king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], king_index)
         SignUp_List = All_OutKnife_Data[week][king]['報名列表']
         index = tea_fig_list_check(SignUp_List, f'<@!{author_id}>')
+        overflow_List = All_OutKnife_Data[week]['補償清單']['報名列表']
+        overflow_index = tea_fig_list_check(overflow_List, f'<@!{author_id}>')
+        SignUp_List_tmp = All_OutKnife_Data[week]['出刀清單']["報名列表"]
         if len(index) > 0:
             await self.報名(ctx, 7)
+        elif len(overflow_index) > 0:
+            await self.報名(ctx, 7)
+            info = {'ol':1}
+            tea_fig_enter_info_change(SignUp_List_tmp, author_id, info)
+            in_king = 7
+            meme_index = (week - now['周']) * list_refresh_king + in_king - 1
+            await self.meme_edit(ctx, week, in_king, meme_index)
         else:
             await ctx.send(f'尚未報名{force_week}周{king}清單')
 
@@ -1657,12 +1668,13 @@ def tea_fig_list_func(msg):
     for k2 in SignUp_List:
         remark = "- " + k2["備註"] if "備註" in k2 else ''
         tree = " [掛樹]" if "tree" in k2 else ''
+        ol = " [補償]" if "ol" in k2 else ''
         if(msg == "補償清單"):
             embed.add_field(
                 name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit}', inline=False)
         elif(msg == "出刀清單"):
             embed.add_field(
-                name=f'No.{n}{tree}', value=f'{k2["id"]} {k2["傷害"]}{unit}{remark}', inline=False)
+                name=f'No.{n}{ol}{tree}', value=f'{k2["id"]} {k2["傷害"]}{unit}{remark}', inline=False)
         else:
             embed.add_field(
                 name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit},{k2["呼叫"]},{k2["進場"]}', inline=False)

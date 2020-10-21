@@ -60,8 +60,7 @@ class React(Cog_Extension):
     _name = 'react'
     _file_data = {}
     _data = {}
-
-    logger = logger
+    _set_default = {}
 
     # def __init__(self, bot):
     #     super().__init__(bot)
@@ -105,36 +104,24 @@ class React(Cog_Extension):
     async def on_ready(self):
         logger.info(self._name + ' on_ready.')
         await self._get_message_setting()
+        await self.get_react_command_list()
         """ /* 752886850435416264-767615688755118091 */ """
 
-    async def _get_message_setting(self):
-        """ 依據檔案的channel、message id 取得message object """
-        msg_ids = [self._file_data['msg_id']]
-        channel_id = self._file_data['channel_id']
-        msg_objs = await self._get_message_obj(channel_id=channel_id, msg_ids=msg_ids)
-        if msg_objs:
-            self._data.setdefault('setting', self._str_to_list(msg_objs[0].content))
-            logger.debug(self._name + f' _data: {self._data}')
-            logger.info(self._name + ' _data get.')
+    async def get_react_command_list(self):
+        """ 獲取react指令 """
+        if 'cmd_channel_id' in self._set_default:
+            channel_id = self._set_default['cmd_channel_id']
+            msg_objs = await self._get_message_obj(channel_id=channel_id)
+            if msg_objs:
+                for message in msg_objs:
+                    content_ls = self._str_to_list(message.content)
+                    if content_ls:
+                        self._set_command(message.id, content_ls['name'], content_ls)
+                    else:
+                        logger.warning(self._name + f' command obj _str_to_list fail.(msg_id={message.id})')
+                return True
         else:
-            logger.warning(self._name + f' _data not get.')
-
-    def _set_command(self, name, setting={}):
-        if name:
-            cmd_obj = self.bot.get_command(name)
-            if cmd_obj:
-                logger.debug(self._name + f' ins_com: {name},{setting}')
-                cmd_obj.callback.__self__.id = setting['id']
-                cmd_obj.callback.__self__.msg = setting['msg']
-            else:
-                logger.debug(self._name + f' add_com: {name},{setting}')
-                obj = cms_class()
-                obj.msg = setting['msg']
-                self.bot.add_command(commands.Command(obj.add_cmd, name=name))
-            logger.info(self._name + ' cmds complete.')
-            return True
-        else:
-            logger.warning(self._name + ' name not set.')
+            logger.warning(self._name + f' cmd_channel_id not get.')
             return False
 
     @commands.command()
@@ -147,10 +134,10 @@ class React(Cog_Extension):
                 self._data[key] += value
             else:
                 self._data.update({key: value})
-        self._set_command()
-        await self.msg_change()
+        # self._set_command()
+        # await self.msg_change()
 
-    async def msg_change(self):
+    async def _change_message_obj(self):
         if self._file_data:
             channel_id = self._file_data['channel_id']  # 750943234691432510
             msg_id = self._file_data['msg_id']  # 750946905751814224
@@ -178,9 +165,11 @@ class React(Cog_Extension):
         channel = self.bot.get_channel(channel_id)
         msg = await channel.fetch_message(msg_id)
         if payload.emoji.name == msg.content:  # 相等
-            print(True)
+            pass
+            # print(True)
         else:
-            print(payload.emoji.name, msg.content)
+            pass
+            # print(payload.emoji.name, msg.content)
 
 # @commands.command()
 # async def aaa(self,ctx):
@@ -190,7 +179,7 @@ class React(Cog_Extension):
 def setup(bot):
     obj = React(bot)
     bot.add_cog(obj)
-    logging.debug(obj._name + 'being loaded!')
+    logging.debug(obj._name + ' being loading!')
 
 # @commands.command(description="EX. *hello", brief="EX. *hello")
 # async def hello(self, ctx):

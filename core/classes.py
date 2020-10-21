@@ -80,9 +80,9 @@ class Cog_Extension(commands.Cog):
                 for msg_id in msg_ids:
                     try:
                         message = await channel.fetch_message(msg_id)
+                        msg_objs.append(message)
                     except:
                         logger.warning(self._name + f' message not find.(msg_id={msg_id})')
-                    msg_objs.append(message)
 
             logger.info(self._name + ' message object get.')
             return msg_objs
@@ -90,6 +90,43 @@ class Cog_Extension(commands.Cog):
             logger.warning(self._name + ' no message object data.')
             return False
 
+    async def _get_message_setting(self):
+        """ 依據檔案的channel、message id 取得message object """
+        msg_ids = [self._file_data['msg_id']]
+        channel_id = self._file_data['channel_id']
+        msg_objs = await self._get_message_obj(channel_id=channel_id, msg_ids=msg_ids)
+        if msg_objs:
+            self._set_default = self._str_to_list(msg_objs[0].content)
+            logger.debug(self._name + f' _set_default: {self._set_default}')
+            if self._set_default:
+                logger.info(self._name + ' _set_default get.')
+            else:
+                logger.warning(self._name + ' _set_default not get.')
+        else:
+            logger.warning(self._name + f' _set_default msg_objs not get.')
+
+    def _set_command(self, msg_id, name, setting={}):
+        """ 設定指令 """
+        if name:
+            cmd_obj = self.bot.get_command(name)
+            if cmd_obj:
+                logger.debug(self._name + f' ins_com: {name},{setting}')
+                obj = cmd_obj.callback.__self__
+                if obj.id == msg_id:
+                    obj.msg = setting['msg']
+                else:
+                    logger.warning(self._name + f' command name repeat.')
+            else:
+                logger.debug(self._name + f' add_com: {name},{setting}')
+                obj = cms_class()
+                obj.id = msg_id
+                obj.msg = setting['msg']
+                self.bot.add_command(commands.Command(obj.add_cmd, name=name))
+            logger.info(self._name + ' cmds complete.')
+            return True
+        else:
+            logger.warning(self._name + ' name not set.')
+            return False
 
 class cms_class:
     id = 0
