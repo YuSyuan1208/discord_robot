@@ -434,7 +434,7 @@ class Team_Fight(Cog_Extension):
                     await ctx.send(f'{tmp[0]}進場成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}', delete_after=delete_after)
                     In_SignUp_List = All_OutKnife_Data[week][str(now['王'])+'王']["報名列表"]
                     in_index = tea_fig_list_check(In_SignUp_List, f'<@!{author_id}>')
-                    if '進場' in in_index[0]:
+                    if in_index:
                         In_SignUp_List[in_index[0]]['進場'] += 1
                         await self.meme_edit(ctx, week, now['王'], meme_in_index)
                 else:
@@ -956,22 +956,26 @@ class Team_Fight(Cog_Extension):
             All_OutKnife_Data[1], msg_index[1])
 
         # 出刀清單找尋
-        ol_index = tea_fig_list_check(All_OutKnife_Data[week]['出刀清單']['報名列表'], f'<@!{author_id}>')
-        if len(ol_index) > 0:
-            used_list = [tmp['id']
-                         for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
-            user_index = used_list.index(f'<@!{author_id}>')
-            await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
-            meme_index = (week - now['周']) * list_refresh_king + king - 1
-            """ SignUp_List_tmp = All_OutKnife_Data[week_data][king_data]["報名列表"]
-            index_tmp = 0
-            for v in SignUp_List_tmp:
-                if index_tmp < user_index:
-                    print(v['呼叫'])
-                    v['呼叫'] += 1
-                    index_tmp += 1
-                else:
-                    break """
+        rd_index = tea_fig_list_check(All_OutKnife_Data[week]['出刀清單']['報名列表'], f'<@!{author_id}>')
+        if len(rd_index) > 0:
+            if 'ol' in All_OutKnife_Data[week]['出刀清單']['報名列表'][rd_index[0]]:
+                ol_index = tea_fig_list_check(All_OutKnife_Data[week]['補償清單']['報名列表'], f'<@!{author_id}>')
+                ol_index = ol_index[0]
+                await self.取消報名(ctx, 6, ol_index+1, week, author_id)
+            else:
+                used_list = [tmp['id']
+                            for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
+                user_index = used_list.index(f'<@!{author_id}>')
+                await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
+                """ SignUp_List_tmp = All_OutKnife_Data[week_data][king_data]["報名列表"]
+                index_tmp = 0
+                for v in SignUp_List_tmp:
+                    if index_tmp < user_index:
+                        print(v['呼叫'])
+                        v['呼叫'] += 1
+                        index_tmp += 1
+                    else:
+                        break """
         else:
             return 0
         # except:
@@ -979,14 +983,15 @@ class Team_Fight(Cog_Extension):
         #     return 0
 
         # 傷害計算
-        ol_index = ol_index[0]
-        damage = All_OutKnife_Data[week]['出刀清單']["報名列表"][ol_index]["傷害"]
+        rd_index = rd_index[0]
+        damage = All_OutKnife_Data[week]['出刀清單']["報名列表"][rd_index]["傷害"]
         now_king_left_hp = All_OutKnife_Data[week_data][king_data]["資訊"]["hp"]
         now_king_left_hp -= int(damage)
         All_OutKnife_Data[week_data][king_data]["資訊"]["hp"] = now_king_left_hp
+        meme_index = (week - now['周']) * list_refresh_king + king - 1
         await self.meme_edit(ctx, week, king, meme_index)
         # TODO: 出刀清單 取消
-        await self.取消報名(ctx, 7, ol_index+1, week, author_id)
+        await self.取消報名(ctx, 7, rd_index+1, week, author_id)
         if now_king_left_hp > 0:
             return 0
 

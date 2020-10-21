@@ -179,7 +179,7 @@ class React(Cog_Extension):
 def setup(bot):
     obj = React(bot)
     bot.add_cog(obj)
-    logging.debug(obj._name + ' being loading!')
+    logging.info(obj._name + ' being loading!')
 
 # @commands.command(description="EX. *hello", brief="EX. *hello")
 # async def hello(self, ctx):
