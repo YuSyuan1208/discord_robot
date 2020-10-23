@@ -779,15 +779,16 @@ class Team_Fight(Cog_Extension):
         overflow_List = All_OutKnife_Data[week]['補償清單']['報名列表']
         overflow_index = tea_fig_list_check(overflow_List, f'<@!{author_id}>')
         SignUp_List_tmp = All_OutKnife_Data[week]['出刀清單']["報名列表"]
-        if len(index) > 0:
-            await self.報名(ctx, 7)
-        elif len(overflow_index) > 0:
+        # 查找補償清單、報名清單
+        if len(overflow_index) > 0:
             await self.報名(ctx, 7)
             info = {'ol':1}
             tea_fig_enter_info_change(SignUp_List_tmp, author_id, info)
             in_king = 7
             meme_index = (week - now['周']) * list_refresh_king + in_king - 1
             await self.meme_edit(ctx, week, in_king, meme_index)
+        elif len(index) > 0:
+            await self.報名(ctx, 7)
         else:
             await ctx.send(f'尚未報名{force_week}周{king}清單')
 
