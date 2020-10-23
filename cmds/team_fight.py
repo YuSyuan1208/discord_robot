@@ -748,17 +748,22 @@ class Team_Fight(Cog_Extension):
             print(sys.exc_info()[0])
     """ ----------------- 報名相關指令 -----------------"""
 
-    """ ----------------- 補償相關指令 -----------------"""
-    @commands.command(name='補償清單',
+    """ ----------------- tag清單相關指令 -----------------"""
+    @commands.command(name='tag清單',
                       # description="Answers a yes/no question.",
                       brief="Answers from the beyond.",
-                      aliases=['ol'])
-    async def 補償清單(self, ctx):
-        SignUp_List = overflow['報名列表']
+                      aliases=['t'])
+    async def tag清單(self, ctx, msg):
+        author_id = ctx.author.id
+        if (admin_check(author_id, self.bot) != True):
+            return False
+        week = now['周']
+        list = tea_fig_KingIndexToKey(All_OutKnife_Data[week], msg)
+        SignUp_List = All_OutKnife_Data[week][list]['報名列表']
         for i in SignUp_List:
-            await ctx.send(f'{i["id"]} {i["傷害"]}')
+            await ctx.send(f'{i["id"]}')
 
-    """ ----------------- 補償相關指令 -----------------"""
+    """ ----------------- tag清單相關指令 -----------------"""
 
     """ ----------------- 出刀相關指令 -----------------"""
     @commands.command(name='進刀',
@@ -844,8 +849,6 @@ class Team_Fight(Cog_Extension):
         SignUp_List = ReportDamage['報名列表']
         content = ''
         for i in SignUp_List:
-            # tag 全部出刀清單人員
-            # if 'tree' in i:
             content += f' {i["id"]}'
         if content:
             await ctx.send(f'{content}下來啦，是要在樹上多久!')
@@ -1484,8 +1487,7 @@ class Team_Fight(Cog_Extension):
 
     @commands.command(name='test',
                       description="Answers a yes/no question.",
-                      brief="Answers from the beyond.",
-                      aliases=['t'])
+                      brief="Answers from the beyond.")
     async def test(self, ctx):
         print(list_msg_tmp_id)
         for i in list_msg_tmp:
