@@ -205,6 +205,7 @@ class Team_Fight(Cog_Extension):
                             remark = all_str[1] if len(all_str) > 1 else False
                             dc_damage = tmp_tmp[0]
                             tree = 1 if '[掛樹]' in i2.name else False
+                            ol = 1 if '[補償]' in i2.name else False
 
                             # print(dc_id,dc_damage)
                             if(no < sys_list_len):
@@ -228,6 +229,8 @@ class Team_Fight(Cog_Extension):
                                     sys_list_tmp[l]["備註"] = remark
                                 if tree:
                                     sys_list_tmp[l]["tree"] = 1
+                                if ol:
+                                    sys_list_tmp[l]["ol"] = 1
                             no += 1
                     if(list_changed_content):
                         change_content_list.append(list_changed_content)
