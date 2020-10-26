@@ -113,14 +113,14 @@ class Cog_Extension(commands.Cog):
                 logger.debug(self._name + f' ins_com: {name},{setting}')
                 obj = cmd_obj.callback.__self__
                 if obj.id == msg_id:
-                    obj.msg = setting['msg']
+                    obj.content = setting['content']
                 else:
                     logger.warning(self._name + f' command name repeat.')
             else:
                 logger.debug(self._name + f' add_com: {name},{setting}')
                 obj = cms_class()
                 obj.id = msg_id
-                obj.msg = setting['msg']
+                obj.content = setting['content']
                 self.bot.add_command(commands.Command(obj.add_cmd, name=name))
             logger.info(self._name + ' cmds complete.')
             return True
@@ -130,7 +130,7 @@ class Cog_Extension(commands.Cog):
 
 class cms_class:
     id = 0
-    msg = []
+    content = []
 
     async def add_cmd(self, ctx, *argv, **knews):
-        await ctx.send(random.choice(self.msg).format(ctx=ctx, argv=argv, knews=knews))
+        await ctx.send(random.choice(self.content).format(ctx=ctx, argv=argv, knews=knews))

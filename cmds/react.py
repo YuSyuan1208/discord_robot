@@ -86,19 +86,17 @@ class React(Cog_Extension):
     #         f.write(json.dumps(self._file_data))
     #         f.close()
 
-    @commands.command()
-    async def _check(self, ctx):
+    def _check(self, ctx):
         if self._file_data and self._data:
             logger.info(self._name + ' file already get.')
             return True
         else:
             logger.warning(self._name + ' file not getting!')
-        channel_id = ctx.channel.id
-        msg = await ctx.send(json.dumps(self._data, indent=4))
-        msg_id = msg.id
-        self._file_data.update({'channel_id': channel_id, 'msg_id': msg_id})
-        self.file('w')
-        logger.info(self._name + ' file created.')
+            return False
+
+    def _list_to_str(self, list):
+        str = json.dumps(list, indent=4)
+        return str
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -125,36 +123,18 @@ class React(Cog_Extension):
             return False
 
     @commands.command()
-    async def at(self, ctx, *msg):
-        content = ' '.join(msg[0:])
-        ast_content = ast.literal_eval(content)
-        # logger.debug()
-        for key, value in ast_content.items():
-            if key in self._data:
-                self._data[key] += value
-            else:
-                self._data.update({key: value})
-        # self._set_command()
-        # await self.msg_change()
+    async def at(self, ctx, name, cotent):
+        pass
 
-    async def _change_message_obj(self):
-        if self._file_data:
-            channel_id = self._file_data['channel_id']  # 750943234691432510
-            msg_id = self._file_data['msg_id']  # 750946905751814224
-            channel = self.bot.get_channel(channel_id)
-            if not channel:
-                logger.warning(self._name + f' channel not find.({channel_id})')
-                return False
-            msg = await channel.fetch_message(msg_id)
-            if not msg:
-                logger.warning(self._name + f' message not find.({msg_id})')
-                return False
-            logger.debug(self._name + f' message get.(msg= {msg})')
-            await msg.edit(content=json.dumps(self._data, indent=4))
+    async def _edit_message_obj(self, msg_obj, **knews):
+        if 'content' in knews:
+            knews['content'] = self._list_to_str(knews['cotent'])
+        await msg_obj.edit(knews)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        user_id = payload.user_id
+        pass
+        """ user_id = payload.user_id
         channel_id = payload.channel_id
         message_id = payload.message_id
         channel = self.bot.get_channel(channel_id)
@@ -169,7 +149,7 @@ class React(Cog_Extension):
             # print(True)
         else:
             pass
-            # print(payload.emoji.name, msg.content)
+            # print(payload.emoji.name, msg.content) """
 
 # @commands.command()
 # async def aaa(self,ctx):
