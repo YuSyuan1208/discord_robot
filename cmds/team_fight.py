@@ -69,12 +69,19 @@ overflow_cancel_emoji = '🆖'
 class Team_Fight(Cog_Extension):
 
     _name = 'team_fight'
+    _file_data = {}
+    _data = {}
+    _set_default = {}
 
     """ ----------------- 重啟清單比對 -----------------"""
 
     @commands.Cog.listener()
     async def on_ready(self):
         bot = self.bot
+
+        """ file 拿取 """
+        await self._get_message_setting()
+
         ''' channel object '''
         if team_fight_function_enable and team_fight_list_compare_enable:
             meme_channel_obj = bot.get_channel(meme_channel)
@@ -353,7 +360,7 @@ class Team_Fight(Cog_Extension):
             delete_after = None
             delete_msg = ''
         ''' 權限 '''
-        if (admin_check(author_id, self.bot) != True):
+        if (admin_check(author_id, self.bot, self) != True):
             if(limit_enable):
                 if (channel_id not in [tea_fig_channel, only_meme_speak_channel, run_out_before_look]):
                     return 0
@@ -475,7 +482,7 @@ class Team_Fight(Cog_Extension):
             delete_msg = ''
 
         ''' 權限 '''
-        if (admin_check(author_id, self.bot) != True):
+        if (admin_check(author_id, self.bot, self) != True):
             if(limit_enable):
                 if (channel_id not in [tea_fig_channel, only_meme_speak_channel, run_out_before_look]):
                     return 0
@@ -507,7 +514,7 @@ class Team_Fight(Cog_Extension):
             list_len = len(SignUp_List)
             # print(in_id)
             # print(list_len)
-            if((admin_check(author_id, self.bot) == True) or (f'<@!{author_id}>' == All_OutKnife_Data[week][tmp[0]]["報名列表"][in_id-1]["id"])):
+            if((admin_check(author_id, self.bot, self) == True) or (f'<@!{author_id}>' == All_OutKnife_Data[week][tmp[0]]["報名列表"][in_id-1]["id"])):
                 # for v in data:
                 #    if(v["id"] == f'{in_id}'):
                 if(list_len >= in_id):
@@ -724,7 +731,7 @@ class Team_Fight(Cog_Extension):
         channel_id = ctx.channel.id
         author_id = ctx.author.id
         ''' 權限 '''
-        if (admin_check(author_id, self.bot) != True):
+        if (admin_check(author_id, self.bot, self) != True):
             if(limit_enable):
                 if (channel_id not in [tea_fig_channel]):
                     return 0
@@ -758,7 +765,7 @@ class Team_Fight(Cog_Extension):
                       aliases=['t'])
     async def tag清單(self, ctx, msg):
         author_id = ctx.author.id
-        if (admin_check(author_id, self.bot) != True):
+        if (admin_check(author_id, self.bot, self) != True):
             return False
         week = now['周']
         list = tea_fig_KingIndexToKey(All_OutKnife_Data[week], msg)
@@ -847,7 +854,7 @@ class Team_Fight(Cog_Extension):
     @commands.command(name='掛樹清單', aliases=['tl'])
     async def 掛樹清單(self, ctx, flag=True):
         author_id = ctx.author.id
-        if (admin_check(author_id, self.bot) != True) and flag:
+        if (admin_check(author_id, self.bot, self) != True) and flag:
             return False
         SignUp_List = ReportDamage['報名列表']
         content = ''
@@ -885,7 +892,7 @@ class Team_Fight(Cog_Extension):
         channel_id = ctx.channel.id
         author_id = ctx.author.id
         ''' 權限 '''
-        if (admin_check(author_id, self.bot) != True):
+        if (admin_check(author_id, self.bot, self) != True):
             if(limit_enable):
                 if (channel_id not in [tea_fig_channel]):
                     return 0
@@ -941,7 +948,7 @@ class Team_Fight(Cog_Extension):
         if(limit_enable):
             if (channel_id not in [run_out_before_look]):
                 return 0
-        if (admin_check(author_id, self.bot) == True):
+        if (admin_check(author_id, self.bot, self) == True):
             if(len(msg) > 0):
                 symbol_array = ['!', '@', '<', '>']
                 tmp_id = msg[0]
@@ -1075,7 +1082,7 @@ class Team_Fight(Cog_Extension):
         channel_id = ctx.channel.id
         author_id = ctx.author.id
         ''' 權限 '''
-        if (admin_check(author_id, self.bot) != True):
+        if (admin_check(author_id, self.bot, self) != True):
             if(limit_enable):
                 if (channel_id not in [tea_fig_channel]):
                     return 0
@@ -1108,7 +1115,7 @@ class Team_Fight(Cog_Extension):
     async def now_print(self, ctx):
         author_id = ctx.author.id
         ''' 權限 '''
-        if(admin_check(author_id, self.bot) != True):
+        if(admin_check(author_id, self.bot, self) != True):
             return 0
         week = now['force_week']
         king = now['王']
@@ -1184,7 +1191,7 @@ class Team_Fight(Cog_Extension):
     @commands.command()
     async def show_限制周(self, ctx):
         author_id = ctx.author.id
-        if(admin_check(author_id, self.bot) == True):
+        if(admin_check(author_id, self.bot, self) == True):
             week = now['limit_max_week']
             await ctx.send(f'限制周:{week}周')
 
@@ -1194,7 +1201,7 @@ class Team_Fight(Cog_Extension):
                       )
     async def 血量變更(self, ctx, msg):
         author_id = ctx.author.id
-        if(admin_check(author_id, self.bot) != True):
+        if(admin_check(author_id, self.bot, self) != True):
             return 0
         week = now["周"]
         force_week = now["force_week"]
@@ -1210,7 +1217,7 @@ class Team_Fight(Cog_Extension):
         author_id = ctx.author.id
         overflow_tmp = {'資訊': {"header": "",
                                "footer": "", "hp": 90}, '報名列表': []}
-        if(admin_check(author_id, self.bot) == True):
+        if(admin_check(author_id, self.bot, self) == True):
             All_OutKnife_Data.clear()
             for i in range(1, int(msg)+1):
                 All_OutKnife_Data[i] = {'1王': {'資訊': {"header": "", "footer": "", "hp": 600}, '報名列表': []},
@@ -1226,7 +1233,7 @@ class Team_Fight(Cog_Extension):
     @commands.command()
     async def add_team_fight_list(self, ctx, msg1, msg2):
         author_id = ctx.author.id
-        if(admin_check(author_id, self.bot) == True):
+        if(admin_check(author_id, self.bot, self) == True):
             for i in range(int(msg1), int(msg2)+1):
                 All_OutKnife_Data[i]['補償清單'] = overflow
                 All_OutKnife_Data[i]['出刀清單'] = ReportDamage
@@ -1488,15 +1495,23 @@ class Team_Fight(Cog_Extension):
     """----------------- reaction command -----------------"""
     ''' [692739940282531883, 692739944686551133, 692739950994522224, 692739955620839504, 692739960910118962, 0, 692739964936519681, 692739970129199206, 692739974583418991, 692739979792613466, 692739984649748521, 0, 692739989125201970, 692739994586185778, 692739998717444188, 692740003989684344, 692740008809070632, 692740013666074685] '''
 
+    def admin_check(self):
+        return self._set_default['manage']
+        
+
     @commands.command(name='test',
                       description="Answers a yes/no question.",
                       brief="Answers from the beyond.")
     async def test(self, ctx):
-        print(list_msg_tmp_id)
+        await self.admin_check()
+        print(self._set_default['manage'])
+        # get_role_members(self.bot)
+        # await ctx.send(f'<@&734391146910056478>')
+        """ print(list_msg_tmp_id)
         for i in list_msg_tmp:
             print(i[0], i[1])
         print(All_OutKnife_Data[1]["出刀清單"]["報名列表"])
-        pass
+        pass """
         # print(overflow)
         # print(All_OutKnife_Data)
         #
@@ -1514,7 +1529,7 @@ class Team_Fight(Cog_Extension):
         channel_id = ctx.channel.id
         author_id = ctx.author.id
         ''' 權限 '''
-        if(admin_check(author_id, self.bot) != True):
+        if(admin_check(author_id, self.bot, self) != True):
             if (channel_id != tea_fig_channel):
                 return 0
         """ try: """
