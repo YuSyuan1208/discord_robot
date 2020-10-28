@@ -85,7 +85,11 @@ class Cog_Extension(commands.Cog):
                         logger.warning(self._name + f' message not find.(msg_id={msg_id})')
 
             logger.info(self._name + ' message object get.')
-            return msg_objs
+            if not msg_objs:
+                logger.warning(self._name + ' no message object data.')
+                return False
+            else:
+                return msg_objs
         else:
             logger.warning(self._name + ' no message object data.')
             return False

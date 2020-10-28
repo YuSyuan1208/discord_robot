@@ -127,27 +127,33 @@ class React(Cog_Extension):
         cmd_obj = self.bot.get_command(name)
         setting = {}
         content = ' '.join(msg)
-        setting.update({'name': name, 'content': content})
+        setting.update({'name': name, 'content': [content]})
         channel_id = self._set_default['cmd_channel_id']
         if not cmd_obj:
-            msg_obj = self._send_message_obj(channel_id, setting)
+            msg_obj = await self._send_message_obj(channel_id, setting)
         else:
-            print(cmd_obj.callback)
             msg_obj = cmd_obj.callback.__self__
-            msg_objs = self._get_message_obj(channel_id=channel_id, msg_ids=msg_obj.id)
+            logger.debug(self._name + f' at repeat. (setting.content={setting["content"]},msg_obj.content={msg_obj.content})')
+            setting['content'] += msg_obj.content
+            msg_objs = await self._get_message_obj(channel_id=channel_id, msg_ids=[msg_obj.id])
             msg_obj = msg_objs[0]
-            self._edit_message_obj(msg_obj, setting)
+            await self._edit_message_obj(msg_obj, setting)
         self._set_command(msg_obj.id, setting['name'], setting)
 
     async def _edit_message_obj(self, msg_obj, setting):
         if 'content' in setting:
-            setting['content'] = self._list_to_str(setting['cotent'])
-        await msg_obj.edit(setting)
+            content = self._list_to_str(setting['content'])
+        if msg_obj.author == self.bot.user:
+            await msg_obj.edit(content=content)
+        else:
+            await msg_obj.delete()
+            await self._send_message_obj(msg_obj.channel.id,setting)
+
 
     async def _send_message_obj(self, channel_id, setting):
         channel = self.bot.get_channel(channel_id)
         content = self._list_to_str(setting)
-        await channel.send(content)
+        return await channel.send(content)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
