@@ -114,7 +114,7 @@ class React(Cog_Extension):
                 for message in msg_objs:
                     content_ls = self._str_to_list(message.content)
                     if content_ls:
-                        self._set_command(message.id, content_ls['name'], content_ls)
+                        self._set_command(message.id, content_ls['name'], setting=content_ls, init_flag=True)
                     else:
                         logger.warning(self._name + f' command obj _str_to_list fail.(msg_id={message.id})')
                 return True
@@ -123,13 +123,31 @@ class React(Cog_Extension):
             return False
 
     @commands.command()
-    async def at(self, ctx, name, cotent):
-        pass
+    async def at(self, ctx, name, *msg):
+        cmd_obj = self.bot.get_command(name)
+        setting = {}
+        content = ' '.join(msg)
+        setting.update({'name': name, 'content': content})
+        channel_id = self._set_default['cmd_channel_id']
+        if not cmd_obj:
+            msg_obj = self._send_message_obj(channel_id, setting)
+        else:
+            print(cmd_obj.callback)
+            msg_obj = cmd_obj.callback.__self__
+            msg_objs = self._get_message_obj(channel_id=channel_id, msg_ids=msg_obj.id)
+            msg_obj = msg_objs[0]
+            self._edit_message_obj(msg_obj, setting)
+        self._set_command(msg_obj.id, setting['name'], setting)
 
-    async def _edit_message_obj(self, msg_obj, **knews):
-        if 'content' in knews:
-            knews['content'] = self._list_to_str(knews['cotent'])
-        await msg_obj.edit(knews)
+    async def _edit_message_obj(self, msg_obj, setting):
+        if 'content' in setting:
+            setting['content'] = self._list_to_str(setting['cotent'])
+        await msg_obj.edit(setting)
+
+    async def _send_message_obj(self, channel_id, setting):
+        channel = self.bot.get_channel(channel_id)
+        content = self._list_to_str(setting)
+        await channel.send(content)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):

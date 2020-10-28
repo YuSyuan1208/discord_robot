@@ -105,14 +105,14 @@ class Cog_Extension(commands.Cog):
         else:
             logger.warning(self._name + f' _set_default msg_objs not get.')
 
-    def _set_command(self, msg_id, name, setting={}):
+    def _set_command(self, msg_id, name, setting={}, init_flag=False):
         """ 設定指令 """
         if name:
             cmd_obj = self.bot.get_command(name)
             if cmd_obj:
                 logger.debug(self._name + f' ins_com: {name},{setting}')
                 obj = cmd_obj.callback.__self__
-                if obj.id == msg_id:
+                if obj.id == msg_id or not init_flag:
                     obj.content = setting['content']
                 else:
                     logger.warning(self._name + f' command name repeat.')
