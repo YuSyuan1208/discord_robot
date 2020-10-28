@@ -1496,7 +1496,11 @@ class Team_Fight(Cog_Extension):
     ''' [692739940282531883, 692739944686551133, 692739950994522224, 692739955620839504, 692739960910118962, 0, 692739964936519681, 692739970129199206, 692739974583418991, 692739979792613466, 692739984649748521, 0, 692739989125201970, 692739994586185778, 692739998717444188, 692740003989684344, 692740008809070632, 692740013666074685] '''
 
     def admin_check(self):
-        return self._set_default['manage']
+        return self._set_default['manages']
+        
+    @commands.command()
+    async def reload_admin(self, ctx):
+        await self._get_message_setting()
         
 
     @commands.command(name='test',
