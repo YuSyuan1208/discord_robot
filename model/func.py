@@ -105,8 +105,9 @@ if team_fight_function_enable:
 def admin_check(user_id, bot, self=False):
     if user_id in get_role_members(bot):
         return True
-    elif f'<@!{user_id}>' in self.admin_check():
-        return True
+    elif self:
+        if f'<@!{user_id}>' in self.admin_check():
+            return True
     return False
 
 
