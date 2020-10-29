@@ -125,6 +125,7 @@ class Cog_Extension(commands.Cog):
                 obj = cms_class()
                 obj.id = msg_id
                 obj.content = setting['content']
+                obj.obj_type = self._name
                 self.bot.add_command(commands.Command(obj.add_cmd, name=name))
             logger.info(self._name + ' cmds complete.')
             return True
@@ -135,6 +136,7 @@ class Cog_Extension(commands.Cog):
 class cms_class:
     id = 0
     content = []
+    obj_type = ''
 
     async def add_cmd(self, ctx, *argv, **knews):
         await ctx.send(random.choice(self.content).format(ctx=ctx, argv=argv, knews=knews))
