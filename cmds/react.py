@@ -95,7 +95,7 @@ class React(Cog_Extension):
             return False
 
     def _list_to_str(self, list):
-        str = json.dumps(list, indent=4)
+        str = json.dumps(list, indent=4, ensure_ascii=False)
         return str
 
     @commands.Cog.listener()
