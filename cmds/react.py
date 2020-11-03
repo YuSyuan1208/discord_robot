@@ -132,22 +132,39 @@ class React(Cog_Extension):
         if not cmd_obj:
             msg_obj = await self._send_message_obj(channel_id, setting)
         else:
+            if not hasattr(cmd_obj.callback, '__self__'):
+                logger.warning(self._name + f' name can not use in command.(name={name})')
+                return False
             msg_obj = cmd_obj.callback.__self__
+            if hasattr(msg_obj, 'obj_type'):
+                obj_type = msg_obj.obj_type
+                if obj_type != self._name:
+                    logger.warning(self._name + f' obj_type compare fail.(obj_type={obj_type})')
+                    return False
+            else:
+                    logger.warning(self._name + f' object has no attribute \obj_type\'.')
+                    return False
             logger.debug(self._name + f' at repeat. (setting.content={setting["content"]},msg_obj.content={msg_obj.content})')
             setting['content'] += msg_obj.content
             msg_objs = await self._get_message_obj(channel_id=channel_id, msg_ids=[msg_obj.id])
             msg_obj = msg_objs[0]
-            await self._edit_message_obj(msg_obj, setting)
-        self._set_command(msg_obj.id, setting['name'], setting)
+            if not await self._edit_message_obj(msg_obj, setting):
+                return False
+        if msg_obj:
+            self._set_command(msg_obj.id, setting['name'], setting)
+        else:
+            return False
 
     async def _edit_message_obj(self, msg_obj, setting):
         if 'content' in setting:
-            content = self._list_to_str(setting['content'])
-        if msg_obj.author == self.bot.user:
-            await msg_obj.edit(content=content)
-        else:
-            await msg_obj.delete()
-            await self._send_message_obj(msg_obj.channel.id,setting)
+            content = self._list_to_str(setting)
+            if msg_obj.author == self.bot.user:
+                await msg_obj.edit(content=content)
+            else:
+                await msg_obj.delete()
+                await self._send_message_obj(msg_obj.channel.id,setting)
+            return True
+        return False
 
 
     async def _send_message_obj(self, channel_id, setting):
