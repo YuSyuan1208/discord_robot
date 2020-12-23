@@ -1581,10 +1581,10 @@ class Team_Fight(Cog_Extension):
             await ctx.send("```arm\n欲查詢列表請標注特定王(ฅฅ*)\n``` ex. \*列表 all ,\*列表 ?王")
             print(sys.exc_info()[0]) """
 
-
 def setup(bot):
-    bot.add_cog(Team_Fight(bot))
-
+    obj = Team_Fight(bot)
+    bot.add_cog(obj)
+    logging.info(obj._name + ' being loading!')
 
 def tea_fig_list_check(matrix, author_str):
     """ 確認人員在列表內，回傳index列表 """

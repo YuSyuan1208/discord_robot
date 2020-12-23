@@ -1,8 +1,9 @@
-import discord
-from discord.ext import commands
 import logging
 import os
+import sys
 import random
+import discord
+from discord.ext import commands
 from model.func import *
 
 logger = logging.getLogger(__name__)
@@ -29,9 +30,12 @@ class Cog_Extension(commands.Cog):
         if type == 'r':
             if os.path.isfile('./data/'+self._name+'.json'):
                 logger.info(self._name + ' file getting.')
-                with open('./data/'+self._name+'.json', 'r', encoding='utf8') as jfile:
-                    self._file_data = json.load(jfile)
-                return True
+                try:
+                    with open('./data/'+self._name+'.json', 'r', encoding='utf8') as jfile:
+                        self._file_data = json.load(jfile)
+                    return True
+                except Exception as e:
+                    raise ValueError(f'file getting error.(message={sys.exc_info()})')
             else:
                 logger.warning(self._name + ' file not find.')
                 return False

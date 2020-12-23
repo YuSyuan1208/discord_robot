@@ -23,6 +23,7 @@ if team_fight_function_enable:
     run_out_before_look = setting_data['run_out_before_look']
     backup_channel_id = setting_data['backup_channel_id']  # 備份頻道
     only_meme_speak_channel = setting_data['only_meme_speak_channel']  # 清單頻道
+    report_damage_channel = setting_data['report_damage_channel']  # re-回報頻道
     list_refresh_week = 1  # 清單列表的循環次數(周)
     list_refresh_king = 7  # 一次清單列表產生的表單數
     list_refresh_max_index = list_refresh_king * list_refresh_week  # 表單總數

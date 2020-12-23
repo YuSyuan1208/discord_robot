@@ -77,6 +77,9 @@ class Event(Cog_Extension):
                 n += 1
                 if n > number:
                     break
+    @commands.command()
+    async def gc(self, ctx):
+        print(ctx.channel.id)
 
 
 def setup(bot):
