@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Main(Cog_Extension):
+class main(Cog_Extension):
 
     _name = 'main'
     # main_str = """\n{
@@ -144,4 +144,4 @@ class Main(Cog_Extension):
 
 
 def setup(bot):
-    bot.add_cog(Main(bot))
+    bot.add_cog(main(bot))

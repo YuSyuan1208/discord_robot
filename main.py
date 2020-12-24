@@ -52,6 +52,7 @@ async def load(ctx, extension):
         if os.path.isfile(f'.\\cmds\\{extension}'):
             bot.load_extension(f'cmds.{extension}.py')
             await ctx.send(f'Loaded {extension}')
+            await bot.get_cog(extension).on_ready()
         else:
             logger.warning(f'Extension cmds.{extension} could not be loaded.')
 
@@ -74,6 +75,7 @@ async def reload(ctx, extension):
         if os.path.isfile(f'.\\cmds\\{extension}.py'):
             bot.reload_extension(f'cmds.{extension}')
             await ctx.send(f'Reloaded {extension}')
+            await bot.get_cog(extension).on_ready()
         else:
             logger.warning(f'Extension cmds.{extension} has not been loaded')
 

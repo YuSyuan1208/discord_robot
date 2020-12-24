@@ -19,6 +19,10 @@ class ir_translation(Cog_Extension):
     _data = {}
     _set_default = {}
 
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print(self._name,'on_ready')
+
 def setup(bot):
     obj = ir_translation(bot)
     bot.add_cog(obj)

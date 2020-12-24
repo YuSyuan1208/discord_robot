@@ -36,7 +36,7 @@ from core.classes import Cog_Extension, cms_class
 logger = logging.getLogger(__name__)
 
 
-class React(Cog_Extension):
+class react(Cog_Extension):
 
     # setting
     """ ch_id: 750943234691432510
@@ -198,7 +198,7 @@ class React(Cog_Extension):
 
 
 def setup(bot):
-    obj = React(bot)
+    obj = react(bot)
     bot.add_cog(obj)
     logging.info(obj._name + ' being loading!')
 

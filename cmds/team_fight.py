@@ -66,7 +66,7 @@ overflow_cancel_emoji = '🆖'
 # *刪除列表 / *Clear
 
 
-class Team_Fight(Cog_Extension):
+class team_Fight(Cog_Extension):
 
     _name = 'team_fight'
     _file_data = {}
@@ -1582,7 +1582,7 @@ class Team_Fight(Cog_Extension):
             print(sys.exc_info()[0]) """
 
 def setup(bot):
-    obj = Team_Fight(bot)
+    obj = team_Fight(bot)
     bot.add_cog(obj)
     logging.info(obj._name + ' being loading!')
 

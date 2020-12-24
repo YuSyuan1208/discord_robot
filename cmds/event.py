@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Event(Cog_Extension):
+class event(Cog_Extension):
 
     _name = 'event'
 
@@ -80,7 +80,11 @@ class Event(Cog_Extension):
     @commands.command()
     async def gc(self, ctx):
         print(ctx.channel.id)
+    
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        print(payload.message_id)
 
 
 def setup(bot):
-    bot.add_cog(Event(bot))
+    bot.add_cog(event(bot))
