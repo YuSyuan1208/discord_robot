@@ -973,9 +973,13 @@ class Team_Fight(Cog_Extension):
         rd_index = tea_fig_list_check(All_OutKnife_Data[week]['出刀清單']['報名列表'], f'<@!{author_id}>')
         if len(rd_index) > 0:
             if 'ol' in All_OutKnife_Data[week]['出刀清單']['報名列表'][rd_index[0]]:
-                ol_index = tea_fig_list_check(All_OutKnife_Data[week]['補償清單']['報名列表'], f'<@!{author_id}>')
-                ol_index = ol_index[0]
-                await self.取消報名(ctx, 6, ol_index+1, week, author_id)
+                try:
+                    ol_index = tea_fig_list_check(All_OutKnife_Data[week]['補償清單']['報名列表'], f'<@!{author_id}>')
+                    ol_index = ol_index[0]
+                    await self.取消報名(ctx, 6, ol_index+1, week, author_id)
+                    logger.warning(self._name + ' ol_list find fail!')
+                except:
+                    await ctx.send('補償清單取消失敗，跳過!')
             else:
                 used_list = [tmp['id']
                             for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
