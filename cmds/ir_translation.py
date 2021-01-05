@@ -21,7 +21,25 @@ class ir_translation(Cog_Extension):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(self._name,'on_ready')
+        await super().on_ready()
+
+    def _conver_str(self, str):
+        if str in self._set_default.keys():
+            logger.debug(self._name + f' _conver_str get.(str={str})')
+            return self._set_default[str]
+        else:
+            return str
+    
+    def _replace_str(self, str):
+        for i in self._set_default.keys():
+            logger.debug(self._name + f' _replace_str get.(str={i})')
+            str = str.replace(i, self._set_default[i])
+        return str
+        
+    @commands.command()
+    async def i(self,ctx,msg):
+        await ctx.send(self._replace_str(msg))
+
 
 def setup(bot):
     obj = ir_translation(bot)

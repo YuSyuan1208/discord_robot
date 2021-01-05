@@ -15,6 +15,10 @@ class Cog_Extension(commands.Cog):
     _file_data = {}
     _data = {}
 
+    async def on_ready(self):
+        logger.info(self._name + ' on_ready.')
+        await self._get_message_setting()
+
     def __init__(self, bot):
         """  """
         self.bot = bot
@@ -99,7 +103,10 @@ class Cog_Extension(commands.Cog):
             return False
 
     async def _get_message_setting(self):
-        """ 依據檔案的channel、message id 取得message object """
+        """ 依據檔案的channel、message id 取得message object 
+
+            self._set_default = self._str_to_list(msg_objs[0].content)
+        """
         msg_ids = [self._file_data['msg_id']]
         channel_id = self._file_data['channel_id']
         msg_objs = await self._get_message_obj(channel_id=channel_id, msg_ids=msg_ids)
@@ -143,4 +150,5 @@ class cms_class:
     obj_type = ''
 
     async def add_cmd(self, ctx, *argv, **knews):
-        await ctx.send(random.choice(self.content).format(ctx=ctx, argv=argv, knews=knews))
+        content = random.choice(self.content).format(ctx=ctx, argv=argv, knews=knews)
+        await ctx.send(content)

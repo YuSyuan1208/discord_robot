@@ -100,8 +100,7 @@ class react(Cog_Extension):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        logger.info(self._name + ' on_ready.')
-        await self._get_message_setting()
+        await super().on_ready()
         await self.get_react_command_list()
         """ /* 752886850435416264-767615688755118091 */ """
 

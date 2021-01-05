@@ -85,6 +85,11 @@ class event(Cog_Extension):
     async def on_raw_reaction_add(self, payload):
         print(payload.message_id)
 
+    @commands.command()
+    async def tr(self, ctx):
+        ir = self.bot.get_cog('ir_translation')
+        content = 0xff
+        await ctx.send(trn(content))
 
 def setup(bot):
     bot.add_cog(event(bot))
