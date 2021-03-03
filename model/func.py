@@ -34,7 +34,17 @@ if team_fight_function_enable:
 
 """ --------------- Initial Data --------------- """
 if team_fight_function_enable:
+
     All_OutKnife_Data = {}
+    for i in range(1, 2):
+        All_OutKnife_Data[i] = {'1王': {'資訊': {"header": "", "footer": "", "hp": 600}, '報名列表': []},
+                                '2王': {'資訊': {"header": "", "footer": "", "hp": 800}, '報名列表': []},
+                                '3王': {'資訊': {"header": "", "footer": "", "hp": 1000}, '報名列表': []},
+                                '4王': {'資訊': {"header": "", "footer": "", "hp": 1200}, '報名列表': []},
+                                '5王': {'資訊': {"header": "", "footer": "", "hp": 1500}, '報名列表': []}}
+    overflow = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []}
+    ReportDamage = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []}
+
     now = {'周': 1, '王': 1, 'limit_max_week': 10, 'force_week': 1}
     list_msg_tmp = []  # [week, king, msg]
     now_msg = {}
@@ -45,11 +55,14 @@ if team_fight_function_enable:
 
 """ --------------- Getting Data --------------- """
 if team_fight_function_enable:
-    with open('./data/data.json', 'r') as content_file:
-        All_OutKnife_save_data = content_file.read()
-    All_OutKnife_Data = ast.literal_eval(All_OutKnife_save_data)
-    overflow = All_OutKnife_Data[1]["補償清單"]
-    ReportDamage = All_OutKnife_Data[1]["出刀清單"]
+    
+    # All_OutKnife_save_data
+    # try:
+    #     with open('./data/data.json', 'r') as content_file:
+    #         All_OutKnife_save_data = content_file.read()
+    #     All_OutKnife_Data = ast.literal_eval(All_OutKnife_save_data)
+    #     overflow = All_OutKnife_Data[1]["補償清單"]
+    #     ReportDamage = All_OutKnife_Data[1]["出刀清單"]
 
     with open('./data/now_data.json', 'r') as content_file:
         now_save_data = content_file.read()
@@ -69,8 +82,8 @@ if team_fight_function_enable:
                                 '3王': {'資訊': {"header": "", "footer": "", "hp": 1000}, '報名列表': []},
                                 '4王': {'資訊': {"header": "", "footer": "", "hp": 1200}, '報名列表': []},
                                 '5王': {'資訊': {"header": "", "footer": "", "hp": 1500}, '報名列表': []}}
-        overflow = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []}"""
-        #ReportDamage = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []}
+        overflow = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []}
+        ReportDamage = {'資訊': {"header": "", "footer": "", "hp": 90}, '報名列表': []} """
         All_OutKnife_Data[i]['補償清單'] = overflow
         All_OutKnife_Data[i]['出刀清單'] = ReportDamage
 
